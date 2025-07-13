@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   window.addEventListener("load", () => {
-    const MIN_PRELOAD_TIME = 2000; // 2 seconds total preloader time
+    const MIN_PRELOAD_TIME = 2500; // 2 seconds total preloader time
     const startTime = Date.now();
   
     const audio = document.getElementById("jingle");
