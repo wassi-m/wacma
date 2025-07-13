@@ -122,9 +122,9 @@
   .hero h1 {
     font-size: 5rem;
     text-align: left;
-    margin-left: 75px;
+    margin-left: 10%;
     font-weight: bold;
-    width: 35%;
+    width: 54%;
     text-transform: uppercase;
     line-height: 4.5rem;
   }
