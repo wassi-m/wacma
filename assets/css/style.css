@@ -4,6 +4,13 @@
     padding: 0;
     box-sizing: border-box;
   }
+
+  .anton-regular {
+  font-family: "Anton", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
   
   body, html {
     font-family: 'Helvetica Neue', sans-serif;
@@ -34,7 +41,7 @@
   .loader-logo img {
     width: 120px;
     height: auto;
-    animation: pulse 1.5s infinite ease-in-out;
+    /* animation: pulse 1.5s infinite ease-in-out; */
   }
   
   /* pulse animation unchanged */
@@ -53,42 +60,55 @@
     text-align: center;
   }
   
-  #unmute-btn {
-    width: 40px;
-    height: 40px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    background-color: #d9534f; /* red bg for muted */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.3s ease;
-  }
-  
-  /* Muted speaker icon (you can replace with your SVG or font icon) */
-  #unmute-btn::before {
-    content: "\1F507"; /* 🔇 Unicode speaker off */
-    font-size: 20px;
-    color: white;
-  }
-  
-  /* When unmuted */
-  #unmute-btn.unmuted {
-    background-color: #5cb85c; /* green bg */
-  }
-  
-  #unmute-btn.unmuted::before {
-    content: "\1F50A"; /* 🔊 Unicode speaker on */
-    color: white;
-  }
+#unmute-btn {
+  position: absolute;
+  bottom: 5%;
+  right: 5%;
+  width: 5rem;
+  height: 5rem;
+  border: none;
+  border-radius: 50%;
+  background-color: red; /* Default: muted */
+  background-image: url('../img/icons/volume-off.svg');
+  background-size: 50% 50%;
+  background-repeat: no-repeat;
+  background-position: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease, background-image 0.3s ease;
+  z-index: 10;
+}
+
+/* When unmuted */
+#unmute-btn[data-state="unmute"] {
+  background-color: #F91C45;
+  background-image: url('../img/icons/play.svg');
+}
+
+/* After unmuting (music playing) */
+#unmute-btn[data-state="playing"] {
+  background-color: #00c853;
+  background-image: url('../img/icons/volume-2.svg');
+}
+
+/* After animation ends (ready to repeat) */
+#unmute-btn[data-state="repeat"] {
+  background-color: #F7FD00;
+  background-image: url('../img/icons/rotate-cw.svg'); /* Replace with your repeat icon */
+}
+
+#unmute-btn:hover {
+  filter: brightness(1.1);
+}
+
   
   
 
   .word {
-    opacity: 0.5;
+    opacity: 1;
     display: inline-block;
     color: #F91C45;
+    transition: opacity 0.5s ease; /* Smooth fade-in */
+
   }
   
   .animate .word {
@@ -109,24 +129,59 @@
   
   
   /* Fullscreen hero section */
-  .hero {
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    text-align: center;
-    padding: 20px;
-    background-color: #0F101E;
+.hero {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  padding: 20px;
+  background-color: #0F101E;
+  overflow: hidden; /* Prevents SVG from spilling out */
+}
+
+.hero-bg {
+position: absolute;
+    right: -27rem;
+    top: -23rem;
+    width: 190rem;
+    height: 86rem;
+    z-index: 0;
+    opacity: 1;
+    rotate: 18.629deg;
+  /* animation: pulse 6s ease-in-out infinite; */
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.1;
   }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.25;
+  }
+}
+
+/* Ensure tagline + button sit above SVG */
+.hero > h1,
+.hero > button {
+  position: relative;
+  z-index: 2;
+}
+
   
   .hero h1 {
-    font-size: 5rem;
+font-family: "Anton", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 8rem;
     text-align: left;
     margin-left: 10%;
-    font-weight: bold;
-    width: 54%;
+    width: 47%;
     text-transform: uppercase;
-    line-height: 4.5rem;
+    line-height: 8rem;
   }
   
   /* Header styles */
