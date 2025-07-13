@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log(`Audio actually playing at ${((Date.now() - startTime) / 1000).toFixed(2)}s`);
       
         function checkAudioTime() {
-          if (audio.currentTime >= 1.2) {
+          if (audio.currentTime >= 1) {
             startAnimation(true, false);
           } else {
             requestAnimationFrame(checkAudioTime);
