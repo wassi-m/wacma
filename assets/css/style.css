@@ -136,9 +136,18 @@
   align-items: center;
   justify-content: flex-start;
   text-align: center;
-  padding: 20px;
+  padding: 0px;
   background-color: #0F101E;
   overflow: hidden; /* Prevents SVG from spilling out */
+}
+
+.gradient {
+  position: absolute;
+    width: 150%;
+    height: 100%;
+    z-index: 1;
+    background: #0F101E;
+    background: linear-gradient(130deg, rgba(15, 16, 30, 1) 0%, rgba(15, 16, 30, 0) 85%);
 }
 
 .hero-bg {
@@ -152,6 +161,70 @@ position: absolute;
     rotate: 18.629deg;
   /* animation: pulse 6s ease-in-out infinite; */
 }
+
+.wave1, .wave2, .wave3, .wave4, .wave5 {
+  stroke-dasharray: 4000;
+  stroke-dashoffset: 0;
+  opacity: 1;
+  transition: none;
+}
+
+.wave-disappear {
+  animation: trimOut 0.6s ease forwards;
+}
+
+.wave-animate {
+  animation: trimInOut 1s ease forwards;
+}
+
+.wave-group-animate {
+  animation: trimIn 1s ease forwards;
+}
+
+.wave-animate,
+.wave-group-animate,
+.wave-disappear {
+  animation-fill-mode: forwards;
+}
+
+@keyframes trimOut {
+  from {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  to {
+    stroke-dashoffset: 1500;
+    opacity: 0;
+  }
+}
+
+@keyframes trimInOut {
+  0% {
+    stroke-dashoffset: -1500;
+    opacity: 0;
+  }
+  50% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 1500;
+    opacity: 0;
+  }
+}
+
+@keyframes trimIn {
+  0% {
+    stroke-dashoffset: -1500; /* negative for left-to-right */
+    opacity: 0;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+
 
 @keyframes pulse {
   0%, 100% {
@@ -179,7 +252,7 @@ font-family: "Anton", sans-serif;
     font-size: 8rem;
     text-align: left;
     margin-left: 10%;
-    width: 47%;
+    width: 39rem;
     text-transform: uppercase;
     line-height: 8rem;
   }
@@ -249,12 +322,30 @@ font-family: "Anton", sans-serif;
   
   /* Responsive tweaks */
   @media (max-width: 768px) {
+    .hero{
+      height: 90vh;
+    }
+
+    .hero h1 {
+      font-size: 6rem;
+      line-height: 6rem;
+      width: 85%;
+    }
+
+    .hero-bg{
+      right: -36rem;
+      top: -17rem;
+      width: 164rem;
+      height: 60rem;
+    }
+
     .navbar {
       flex-direction: column;
       align-items: flex-start;
     }
   
     .nav-links {
+      display: none;
       flex-direction: column;
       gap: 10px;
       margin-top: 10px;

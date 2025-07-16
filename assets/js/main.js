@@ -39,14 +39,23 @@ window.addEventListener("load", () => {
       audio.muted = false;
       unmuteBtn.dataset.state = "playing";
 
+
+
       // Fade in spans to 0.5
       tagline.querySelectorAll(".word").forEach((span) => {
-        span.style.opacity = "0";
+        span.style.opacity = "1";
         span.style.transition = "opacity 0.4s ease";
         requestAnimationFrame(() => {
           span.style.opacity = "0.5";
         });
       });
+
+              // Step 1: Instantly disappear all wave lines with a short delay buffer
+  [1, 2, 3, 4, 5].forEach(num => {
+    const wave = document.querySelector(`.wave${num}`);
+    wave.classList.remove("wave-group-animate", "wave-animate");
+    wave.classList.add("wave-disappear");
+  });
 
       audio.currentTime = 0;
       audio.play().then(() => {
@@ -71,11 +80,18 @@ window.addEventListener("load", () => {
 
       // Reset opacity
       tagline.querySelectorAll(".word").forEach((span) => {
-        span.style.opacity = "0";
+        span.style.opacity = "1";
         requestAnimationFrame(() => {
           span.style.opacity = "0.5";
         });
       });
+
+              // Step 1: Instantly disappear all wave lines with a short delay buffer
+  [1, 2, 3, 4, 5].forEach(num => {
+    const wave = document.querySelector(`.wave${num}`);
+    wave.classList.remove("wave-group-animate", "wave-animate");
+    wave.classList.add("wave-disappear");
+  });
 
       audio.currentTime = 0;
       audio.play().then(() => {
@@ -93,32 +109,74 @@ window.addEventListener("load", () => {
     }
   });
 
-  function startAnimation() {
-    const baseDelay = 0.2;
-    const totalDelayForLastWord = 3.8;
-    const beatDuration = 0.5;
+function startAnimation() {
+  const baseDelay = 0.2;
+  const totalDelayForLastWord = 3.8;
+  const beatDuration = 0.5;
+  const spans = tagline.querySelectorAll(".word");
 
-    const spans = tagline.querySelectorAll(".word");
+  spans.forEach((span, index, arr) => {
+    const delay = (index === arr.length - 1)
+      ? baseDelay + totalDelayForLastWord
+      : baseDelay + index * beatDuration;
 
-    spans.forEach((span, index, arr) => {
-      const delay = (index === arr.length - 1)
-        ? baseDelay + totalDelayForLastWord
-        : baseDelay + index * beatDuration;
+    span.style.animationDelay = `${delay}s`;
+    span.style.animationDuration = "0.2s";
 
-      span.style.animationDelay = `${delay}s`;
-      span.style.animationDuration = "0.2s";
+    // Animate wave1 to wave5 with trimInOut
+    if (index < 5) {
+      const wave = document.querySelector(`.wave${index + 1}`);
+      setTimeout(() => {
+        wave.classList.remove("wave-animate", "wave-disappear", "wave-group-animate");
+        void wave.offsetWidth;
+        wave.classList.add("wave-animate");
+
+        // After animation ends, force it to stay hidden
+        setTimeout(() => {
+          wave.classList.remove("wave-animate");
+          wave.style.strokeDashoffset = "4000";
+          wave.style.opacity = "0";
+        }, 1000); // match trimInOut duration
+      }, delay * 1000);
+    }
+
+if (index === arr.length - 1) {
+  setTimeout(() => {
+    [1, 2, 3].forEach((num, i) => {
+      const wave = document.querySelector(`.wave${num}`);
+      wave.classList.remove("wave-disappear", "wave-animate", "wave-group-animate");
+
+      // Immediately hide wave before animation to prevent flicker
+      wave.style.strokeDashoffset = "4000";
+      wave.style.opacity = "0";
+
+      void wave.offsetWidth;
+
+      setTimeout(() => {
+        // Clear inline styles before animating in
+        wave.style.strokeDashoffset = null;
+        wave.style.opacity = null;
+
+        wave.classList.add("wave-group-animate");
+      }, i * 100); // stagger delay
     });
+  }, delay * 1000);
+}
 
-    tagline.classList.add("animate");
-    console.log(`Animation triggered at ${(Date.now() - startTime) / 1000}s`);
+  });
 
-    // After animation ends, change to repeat button
-    const totalDuration = baseDelay + totalDelayForLastWord + 0.5;
-    setTimeout(() => {
-      unmuteBtn.dataset.state = "repeat";
-      console.log("Animation ended, ready to repeat");
-    }, totalDuration * 1000);
-  }
+  tagline.classList.add("animate");
+
+  // Set button to repeat after full sequence
+  const totalDuration = baseDelay + totalDelayForLastWord + 0.5;
+  setTimeout(() => {
+    unmuteBtn.dataset.state = "repeat";
+  }, totalDuration * 1000);
+}
+
+
+
+
 });
 
 
