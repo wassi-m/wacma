@@ -209,7 +209,7 @@ position: absolute;
 
 @-webkit-keyframes trimInOut {
   0% {
-    stroke-dashoffset: -1500;
+    stroke-dashoffset: 1500;
     opacity: 0;
   }
   50% {
@@ -224,7 +224,7 @@ position: absolute;
 
 @-webkit-keyframes trimIn {
   0% {
-    stroke-dashoffset: -1500;
+    stroke-dashoffset: 1500;
     opacity: 0;
   }
   100% {
@@ -247,7 +247,7 @@ position: absolute;
 
 @keyframes trimInOut {
   0% {
-    stroke-dashoffset: -1500;
+    stroke-dashoffset: 1500;
     opacity: 0;
   }
   50% {
@@ -262,7 +262,7 @@ position: absolute;
 
 @keyframes trimIn {
   0% {
-    stroke-dashoffset: -1500;
+    stroke-dashoffset: 1500;
     opacity: 0;
   }
   100% {
