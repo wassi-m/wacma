@@ -167,6 +167,14 @@ position: absolute;
   stroke-dashoffset: 0;
   opacity: 1;
   transition: none;
+  will-change: stroke-dashoffset, opacity;
+    transform: translateZ(0); /* Forces GPU compositing */
+
+}
+
+.wave-hidden {
+  stroke-dashoffset: 4000 !important;
+  opacity: 0 !important;
 }
 
 .wave-disappear {
@@ -180,6 +188,7 @@ position: absolute;
 .wave-group-animate {
   animation: trimIn 1s ease forwards;
 }
+
 
 .wave-animate,
 .wave-group-animate,
@@ -333,8 +342,8 @@ font-family: "Anton", sans-serif;
     }
 
     .hero-bg{
-    right: -51rem;
-    top: -10rem;
+      right: -51rem;
+      top: -10rem;
       width: 164rem;
       height: 60rem;
     }
