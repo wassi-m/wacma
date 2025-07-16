@@ -33,7 +33,7 @@
     align-items: center;
     justify-content: center;
     z-index: 9999;
-    transition: opacity 0.6s ease, visibility 0.6s;
+    -webkit-transition: opacity 0.6s ease, visibility 0.6s;transition: opacity 0.6s ease, visibility 0.6s;
     gap: 20px; /* ADDED this line for spacing */
   }
   
@@ -41,7 +41,7 @@
   .loader-logo img {
     width: 120px;
     height: auto;
-    /* animation: pulse 1.5s infinite ease-in-out; */
+    /* -webkit-animation: pulse 1.5s infinite ease-in-out;animation: pulse 1.5s infinite ease-in-out; */
   }
   
   /* pulse animation unchanged */
@@ -74,7 +74,7 @@
   background-repeat: no-repeat;
   background-position: center;
   cursor: pointer;
-  transition: background-color 0.3s ease, background-image 0.3s ease;
+  -webkit-transition: background-color 0.3s ease, background-image 0.3s ease;transition: background-color 0.3s ease, background-image 0.3s ease;
   z-index: 10;
 }
 
@@ -107,18 +107,19 @@
     opacity: 1;
     display: inline-block;
     color: #F91C45;
-    transition: opacity 0.5s ease; /* Smooth fade-in */
+    -webkit-transition: opacity 0.5s ease;transition: opacity 0.5s ease; /* Smooth fade-in */
 
   }
   
   .animate .word {
-    animation-fill-mode: forwards;
-    animation-name: appear;
-    animation-duration: 0.2s; /* adjust if you want */
-    animation-timing-function: ease;
+    -webkit-animation-fill-mode: forwards;animation-fill-mode: forwards;
+    -webkit-animation-name: appear;animation-name: appear;
+    -webkit-animation-duration: 0.2s;animation-duration: 0.2s; /* adjust if you want */
+    -webkit-animation-timing-function: ease;animation-timing-function: ease;
   }
   
-  @keyframes appear {
+  @-webkit-keyframes appear
+@keyframes appear {
     to {
       opacity: 1;
     }
@@ -159,51 +160,37 @@ position: absolute;
     z-index: 0;
     opacity: 1;
     rotate: 18.629deg;
-  /* animation: pulse 6s ease-in-out infinite; */
+  /* -webkit-animation: pulse 6s ease-in-out infinite;animation: pulse 6s ease-in-out infinite; */
 }
 
 .wave1, .wave2, .wave3, .wave4, .wave5 {
-  stroke-dasharray: none;
+  -webkit-transform: translateZ(0);transform: translateZ(0);
+  will-change: stroke-dashoffset, opacity;
+  stroke-dasharray: 4000;
   stroke-dashoffset: 0;
   opacity: 1;
-  transition: none;
-  will-change: mask;
-    transform: translateZ(0); /* Forces GPU compositing */
-
-}
-
-.mask-rect {
-  width: 100%;
-  height: 100%;
-  fill: white;
-  transition: width 0.8s ease-in-out;
-}
-
-
-.wave-hidden {
-  stroke-dashoffset: 4000 !important;
-  opacity: 0 !important;
+  -webkit-transition: none;transition: none;
 }
 
 .wave-disappear {
-  animation: trimOut 0.6s ease forwards;
+  -webkit-animation: trimOut 0.6s ease forwards;animation: trimOut 0.6s ease forwards;
 }
 
 .wave-animate {
-  animation: trimInOut 1s ease forwards;
+  -webkit-animation: trimInOut 1s ease forwards;animation: trimInOut 1s ease forwards;
 }
 
 .wave-group-animate {
-  animation: trimIn 1s ease forwards;
+  -webkit-animation: trimIn 1s ease forwards;animation: trimIn 1s ease forwards;
 }
-
 
 .wave-animate,
 .wave-group-animate,
 .wave-disappear {
-  animation-fill-mode: forwards;
+  -webkit-animation-fill-mode: forwards;animation-fill-mode: forwards;
 }
 
+@-webkit-keyframes trimOut
 @keyframes trimOut {
   from {
     stroke-dashoffset: 0;
@@ -215,6 +202,7 @@ position: absolute;
   }
 }
 
+@-webkit-keyframes trimInOut
 @keyframes trimInOut {
   0% {
     stroke-dashoffset: -1500;
@@ -230,6 +218,7 @@ position: absolute;
   }
 }
 
+@-webkit-keyframes trimIn
 @keyframes trimIn {
   0% {
     stroke-dashoffset: -1500; /* negative for left-to-right */
@@ -243,13 +232,14 @@ position: absolute;
 
 
 
+@-webkit-keyframes pulse
 @keyframes pulse {
   0%, 100% {
-    transform: scale(1);
+    -webkit-transform: scale(1);transform: scale(1);
     opacity: 0.1;
   }
   50% {
-    transform: scale(1.05);
+    -webkit-transform: scale(1.05);transform: scale(1.05);
     opacity: 0.25;
   }
 }
@@ -270,7 +260,7 @@ font-family: "Anton", sans-serif;
     text-align: left;
     margin-left: 10%;
     width: 39rem;
-    text-transform: uppercase;
+    text--webkit-transform: uppercase;transform: uppercase;
     line-height: 8rem;
   }
   
@@ -282,7 +272,7 @@ font-family: "Anton", sans-serif;
     width: 100%;
     padding: 20px 40px;
     z-index: 1000;
-    transition: all 0.3s ease;
+    -webkit-transition: all 0.3s ease;transition: all 0.3s ease;
     background: transparent;
   }
 
@@ -295,7 +285,7 @@ font-family: "Anton", sans-serif;
   #main-header.scrolled {
     background: rgba(15, 16, 30, 0.95);
     padding: 10px 30px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
   }
   
   /* Navbar layout */
@@ -324,7 +314,7 @@ font-family: "Anton", sans-serif;
     color: white;
     font-weight: 500;
     font-size: 16px;
-    transition: color 0.3s ease;
+    -webkit-transition: color 0.3s ease;transition: color 0.3s ease;
   }
   
   .nav-links li a:hover {
@@ -350,8 +340,8 @@ font-family: "Anton", sans-serif;
     }
 
     .hero-bg{
-right: -101rem;
-        top: 6rem;
+      right: -51rem;
+      top: -10rem;
       width: 164rem;
       height: 60rem;
     }
