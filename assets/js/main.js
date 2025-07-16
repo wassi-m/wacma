@@ -30,18 +30,36 @@ window.addEventListener("load", () => {
     console.log(`Preloader ended at ${(Date.now() - startTime) / 1000}s`);
   }, remainingTime > 0 ? remainingTime : 0);
 
-  // Helper: Reset wave before animation
-  function resetWave(wave) {
-    wave.classList.remove("wave-animate", "wave-group-animate", "wave-disappear", "wave-hidden");
-    void wave.offsetWidth;
+  // Animate wave mask: expand, hold, collapse
+  function animateMask(rect, expandTime = 800, holdTime = 200, collapseTime = 800) {
+    rect.style.transition = `width ${expandTime}ms ease-in-out`;
+    rect.style.width = '100%';
+
+    setTimeout(() => {
+      rect.style.transition = `width ${collapseTime}ms ease-in-out`;
+      rect.style.width = '0';
+    }, expandTime + holdTime);
   }
 
-  // Helper: Instantly hide wave with CSS class
-  function hideWave(wave) {
-    wave.classList.add("wave-hidden");
+  // Instantly hide a wave mask
+  function hideMask(num) {
+    const rect = document.getElementById(`mask-rect${num}`);
+    if (rect) {
+      rect.style.transition = 'none';
+      rect.style.width = '0';
+    }
   }
 
-  // Unmute & Repeat Button Logic
+  // Show wave mask and keep visible
+  function showMask(num) {
+    const rect = document.getElementById(`mask-rect${num}`);
+    if (rect) {
+      rect.style.transition = 'width 0.8s ease-in-out';
+      rect.style.width = '100%';
+    }
+  }
+
+  // Unmute button
   unmuteBtn.addEventListener("click", () => {
     const state = unmuteBtn.dataset.state;
 
@@ -50,19 +68,16 @@ window.addEventListener("load", () => {
       audio.muted = false;
       tagline.classList.remove("animate");
 
-      // Fade text from 1 to 0.5 smoothly (no full fade out)
+      // Fade tagline words to 0.5 opacity
       tagline.querySelectorAll(".word").forEach(span => {
         span.style.transition = "opacity 0.4s ease";
         span.style.opacity = "0.5";
       });
 
-      // Instantly hide all waves
-      [1, 2, 3, 4, 5].forEach(num => {
-        const wave = document.querySelector(`.wave${num}`);
-        resetWave(wave);
-        hideWave(wave);
-      });
+      // Instantly hide masks for wave1–5
+      [1, 2, 3, 4, 5].forEach(hideMask);
 
+      // Start audio, then wait until 1s mark
       audio.currentTime = 0;
       audio.play().then(() => {
         const waitUntil1s = () => {
@@ -85,6 +100,9 @@ window.addEventListener("load", () => {
     const beatDuration = 0.5;
     const spans = tagline.querySelectorAll(".word");
 
+    // Instantly hide waves 1–3
+    [1, 2, 3].forEach(hideMask);
+
     spans.forEach((span, index, arr) => {
       const delay = (index === arr.length - 1)
         ? baseDelay + totalDelayForLastWord
@@ -93,39 +111,21 @@ window.addEventListener("load", () => {
       span.style.animationDelay = `${delay}s`;
       span.style.animationDuration = "0.2s";
 
-      // Animate wave1 to wave5 individually
+      // Animate wave1–5 masks with delay
       if (index < 5) {
-        const wave = document.querySelector(`.wave${index + 1}`);
+        const rect = document.getElementById(`mask-rect${index + 1}`);
         setTimeout(() => {
-          resetWave(wave);
-          wave.classList.remove("wave-hidden");
-
-          requestAnimationFrame(() => {
-            wave.classList.add("wave-animate");
-
-            // Remove wave-animate & hide again after animation
-            setTimeout(() => {
-              wave.classList.remove("wave-animate");
-              wave.classList.add("wave-hidden");
-            }, 1000);
-          });
+          if (rect) animateMask(rect);
         }, delay * 1000);
       }
 
-      // Final 3 waves animate in staggered
+      // Final: wave1–3 reappear and stay
       if (index === arr.length - 1) {
         setTimeout(() => {
           [1, 2, 3].forEach((num, i) => {
-            const wave = document.querySelector(`.wave${num}`);
-            resetWave(wave);
-            hideWave(wave);
-
             setTimeout(() => {
-              wave.classList.remove("wave-hidden");
-              requestAnimationFrame(() => {
-                wave.classList.add("wave-group-animate");
-              });
-            }, i * 100); // stagger delay
+              showMask(num);
+            }, i * 120);
           });
         }, delay * 1000);
       }

@@ -163,14 +163,22 @@ position: absolute;
 }
 
 .wave1, .wave2, .wave3, .wave4, .wave5 {
-  stroke-dasharray: 4000;
+  stroke-dasharray: none;
   stroke-dashoffset: 0;
   opacity: 1;
   transition: none;
-  will-change: stroke-dashoffset, opacity;
+  will-change: mask;
     transform: translateZ(0); /* Forces GPU compositing */
 
 }
+
+.mask-rect {
+  width: 100%;
+  height: 100%;
+  fill: white;
+  transition: width 0.8s ease-in-out;
+}
+
 
 .wave-hidden {
   stroke-dashoffset: 4000 !important;
@@ -342,8 +350,8 @@ font-family: "Anton", sans-serif;
     }
 
     .hero-bg{
-      right: -51rem;
-      top: -10rem;
+right: -101rem;
+        top: 6rem;
       width: 164rem;
       height: 60rem;
     }
