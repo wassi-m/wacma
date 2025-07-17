@@ -4,7 +4,12 @@
     padding: 0;
     box-sizing: border-box;
   }
-
+  
+[data-scroll-container] {
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
   .anton-regular {
   font-family: "Anton", sans-serif;
   font-weight: 400;

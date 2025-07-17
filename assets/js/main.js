@@ -3,7 +3,45 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.addEventListener("load", () => {
-  const MIN_PRELOAD_TIME = 2500;
+
+  const locoScroll = new LocomotiveScroll({
+  el: document.querySelector('[data-scroll-container]'),
+  smooth: true,
+  // optional: multiplier: 1.2, class: 'is-reveal'
+});
+gsap.registerPlugin(ScrollTrigger);
+
+locoScroll.on("scroll", ScrollTrigger.update);
+
+ScrollTrigger.scrollerProxy("[data-scroll-container]", {
+  scrollTop(value) {
+    return arguments.length
+      ? locoScroll.scrollTo(value, { duration: 0, disableLerp: true })
+      : locoScroll.scroll.instance.scroll.y;
+  },
+  getBoundingClientRect() {
+    return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
+  },
+  pinType: document.querySelector("[data-scroll-container]").style.transform ? "transform" : "fixed"
+});
+
+ScrollTrigger.addEventListener("refresh", () => locoScroll.update());
+ScrollTrigger.refresh();
+
+gsap.to(".hero-bg", {
+  yPercent: 20,
+  ease: "none",
+  scrollTrigger: {
+    scroller: "[data-scroll-container]",
+    trigger: ".hero",
+    start: "top top",
+    end: "bottom top",
+    scrub: true
+  }
+});
+
+
+  const MIN_PRELOAD_TIME = 2000;
   const startTime = Date.now();
 
   const audio = document.getElementById("jingle");
@@ -159,3 +197,4 @@ window.addEventListener("scroll", () => {
     header.classList.remove("scrolled");
   }
 });
+

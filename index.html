@@ -9,6 +9,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+    <script src="assets/js/main.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.css">
+<script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@4.1.4/dist/locomotive-scroll.min.js"></script>
+
 </head>
 <body>
     
@@ -35,10 +41,13 @@
 </header>
 
 <audio id="jingle" src="assets/audio/jingle.mp3"></audio>
-<section class="hero" id="hero">
+
+  <div data-scroll-container>
+
+<section class="hero" id="hero" data-scroll-container>
 	<div class="gradient"></div>
   <!-- SVG background (example circle animation) -->
-  <svg class="hero-bg" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+  <svg class="hero-bg"  version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 1920 1080" style="enable-background:new 0 0 1920 1080;" xml:space="preserve">
 <style type="text/css">
 	.st0{fill:none;stroke:#2D4867;stroke-width:17;stroke-miterlimit:10;}
@@ -139,17 +148,17 @@
 
   <!-- Main Content -->
   <main>
-    <section id="about">
+    <section id="about" data-scroll-container>
       <h2>About Us</h2>
       <p>We are a creative agency pushing boundaries in music, sound, and visuals.</p>
     </section>
 
-    <section id="work">
+    <section id="work" data-scroll-container>
       <h2>Our Work</h2>
       <p>Showcase of projects will go here.</p>
     </section>
 
-    <section id="contact">
+    <section id="contact" data-scroll-container>
       <h2>Contact</h2>
       <form action="contact.php" method="POST">
         <input type="text" name="name" placeholder="Your Name" required />
@@ -165,6 +174,7 @@
     <p>© <?= date("Y") ?> W/A Creative Music Agency. All rights reserved.</p>
   </footer>
 
-  <script src="assets/js/main.js"></script>
+    </div>
+
 </body>
 </html>
