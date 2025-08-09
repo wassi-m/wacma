@@ -583,6 +583,122 @@ font-family: "Anton", sans-serif;
   background-color: #357ABD;
 }
 
+#video-gallery.grid,
+#previewGrid.grid {
+  width: min(1200px, 92vw);
+  margin: 40px auto;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  align-items: start;
+}
+
+/* Tighten on very small screens */
+@media (max-width: 420px) {
+  #video-gallery.grid,
+  #previewGrid.grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    width: 94vw;
+  }
+}
+
+/* Card */
+.video-card {
+  background: #141527;               /* slightly lighter than #0F101E */
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,.35);
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.video-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 32px rgba(0,0,0,.45);
+  border-color: rgba(247, 253, 0, 0.35); /* #F7FD00 accent */
+}
+
+.video-card:focus-within {
+  outline: 2px solid #F7FD00;
+  outline-offset: 2px;
+}
+
+/* Responsive 16:9 wrapper */
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+
+/* Fallback if aspect-ratio unsupported */
+@supports not (aspect-ratio: 16 / 9) {
+  .video-wrapper::before {
+    content: "";
+    display: block;
+    padding-top: 56.25%;
+  }
+  .video-wrapper > iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+/* Default iframe fill */
+.video-wrapper iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+/* Text area */
+.video-info {
+  padding: 14px 16px 18px;
+  display: grid;
+  gap: 6px;
+}
+
+.video-title {
+  margin: 0;
+  font-family: "Anton", sans-serif;  /* you already load Anton */
+  font-weight: 400;
+  font-size: 1.15rem;
+  line-height: 1.2;
+  color: #F7FD00;                    /* brand yellow for titles */
+  text-transform: uppercase;
+  letter-spacing: .2px;
+}
+
+.video-artist {
+  margin: 0;
+  font-size: .95rem;
+  color: rgba(255,255,255,0.7);
+}
+
+/* Clamp long text to two lines */
+.video-title,
+.video-artist {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .video-card { transition: none; }
+  .video-card:hover { transform: none; }
+}
+
+
 /* Responsive tweaks */
 @media (max-width: 768px) {
   .pricing-cards,
