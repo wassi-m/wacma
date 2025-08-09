@@ -1,8 +1,8 @@
 /* =========================================================
-   WACMA — main.js (safe + cross-page)
+   WACMA — main.js
    ========================================================= */
 
-/* ---------- Helpers ---------- */
+/* ---------- Tiny helpers ---------- */
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
@@ -10,16 +10,17 @@ const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
    Brand → Home & Header (native fallback)
    ========================================================= */
 document.addEventListener("DOMContentLoaded", () => {
-  // Brand → go home
+  console.log("WACMA site loaded.");
+
   const brandEl = $(".brand");
   if (brandEl) {
     brandEl.style.cursor = "pointer";
     brandEl.addEventListener("click", () => {
-      window.location.href = "/";
+      window.location.href = "index.html"; // adjust if deployed at a subpath
     });
   }
 
-  // Header scrolled (native scroll fallback)
+  // Header scrolled (window scroll fallback; Locomotive path added later)
   const header = $("#main-header");
   if (header) {
     const onWinScroll = () => {
@@ -60,7 +61,7 @@ function getYouTubeID(url) {
   return m ? m[1] : null;
 }
 
-/* ---------- Build thumbnail card (no iframe in grid) ---------- */
+/* ---------- Thumbnail card (no iframe in grid) ---------- */
 function createVideoCardThumb({ id, title, artist }) {
   const card = document.createElement("div");
   card.className = "video-card";
@@ -101,6 +102,12 @@ function renderLastSixToPreview() {
     if (id) container.appendChild(createVideoCardThumb({ id, title: v.title, artist: v.artist }));
   });
 }
+
+/* ---------- Boot grids ---------- */
+document.addEventListener("DOMContentLoaded", () => {
+  renderAllToGallery();     // portfolio page: all videos (no-op if #video-gallery missing)
+  renderLastSixToPreview(); // index page: last 6 (no-op if #previewGrid missing)
+});
 
 /* =========================================================
    Lightbox modal
@@ -154,15 +161,6 @@ function closeLightbox() {
   const iframe = $("iframe", lightboxEl);
   if (iframe) iframe.remove();
 }
-
-/* =========================================================
-   Boot grids once DOM is ready
-   ========================================================= */
-document.addEventListener("DOMContentLoaded", () => {
-  console.log("WACMA site loaded.");
-  renderAllToGallery();     // portfolio page: all videos (no-op if #video-gallery missing)
-  renderLastSixToPreview(); // index page: last 6 (no-op if #previewGrid missing)
-});
 
 /* =========================================================
    Preloader + Audio/Waves (guarded)
@@ -294,46 +292,8 @@ window.addEventListener("load", () => {
 });
 
 /* =========================================================
-   GSAP + Locomotive + Parallax
+   Locomotive + ScrollTrigger integration (selector strings)
    ========================================================= */
-function initHeroParallax({ useLoco = false } = {}) {
-  const hero = $(".hero");
-  const bg = $(".hero-bg");
-  if (!hero || !bg) return;
-
-  if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
-    gsap.to(".hero-bg", {
-      yPercent: 20,
-      ease: "none",
-      scrollTrigger: {
-        scroller: useLoco ? "[data-scroll-container]" : undefined,
-        trigger: ".hero",
-        start: "top top",
-        end: "bottom top",
-        scrub: true
-      }
-    });
-  } else {
-    // Vanilla fallback (no GSAP)
-    let ticking = false;
-    const onScroll = () => {
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(() => {
-          const rect = hero.getBoundingClientRect();
-          const total = hero.offsetHeight || (window.innerHeight || 1);
-          const traveled = Math.min(Math.max(-rect.top, 0), total);
-          const p = traveled / total; // 0..1
-          bg.style.transform = `translate3d(0, ${p * 20}%, 0)`;
-          ticking = false;
-        });
-      }
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-  }
-}
-
 window.addEventListener("load", () => {
   const scrollerSelector = "[data-scroll-container]";
   const scrollerEl = $(scrollerSelector);
@@ -343,13 +303,13 @@ window.addEventListener("load", () => {
   if (hasGSAP && hasLoco) {
     const locoScroll = new LocomotiveScroll({
       el: scrollerEl,
-      smooth: true,
+      smooth: true
       // multiplier: 1.2,
     });
 
     locoScroll.on("scroll", ScrollTrigger.update);
 
-    // Use selector string to avoid indexOf crash in some builds
+    // Use selector string (avoids indexOf crash)
     ScrollTrigger.scrollerProxy(scrollerSelector, {
       scrollTop(value) {
         return arguments.length
@@ -365,7 +325,7 @@ window.addEventListener("load", () => {
     ScrollTrigger.addEventListener("refresh", () => locoScroll.update());
     ScrollTrigger.refresh();
 
-    // Header class with Locomotive position
+    // Header class using Locomotive position
     const header = $("#main-header");
     if (header) {
       locoScroll.on("scroll", (args) => {
@@ -374,11 +334,29 @@ window.addEventListener("load", () => {
         else header.classList.remove("scrolled");
       });
     }
+  }
+});
 
-    // Parallax with Locomotive
-    initHeroParallax({ useLoco: true });
-  } else {
-    // Native/vanilla
-    initHeroParallax({ useLoco: false });
+/* =========================================================
+   PARALLAX HERO BG — ORIGINAL (as requested)
+   ========================================================= */
+document.addEventListener("DOMContentLoaded", () => {
+  const hero = document.querySelector(".hero");
+  const heroBg = document.querySelector(".hero-bg");
+  if (!hero || !heroBg) return;
+
+  if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.to(heroBg, {
+      yPercent: 20,
+      ease: "none",
+      scrollTrigger: {
+        scroller: "[data-scroll-container]", // OG: use the Locomotive container
+        trigger: hero,
+        start: "top top",
+        end: "bottom top",
+        scrub: true
+      }
+    });
   }
 });
