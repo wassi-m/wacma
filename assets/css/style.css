@@ -73,7 +73,7 @@
   height: 5rem;
   border: none;
   border-radius: 50%;
-  background-color: red; /* Default: muted */
+  background-color: #f7fd00; /* Default: muted */
   background-image: url('../img/icons/volume-off.svg');
   background-size: 50% 50%;
   background-repeat: no-repeat;
@@ -85,7 +85,7 @@
 
 /* When unmuted */
 #unmute-btn[data-state="unmute"] {
-  background-color: #F91C45;
+  background-color: #F7FD00;
   background-image: url('../img/icons/play.svg');
 }
 
