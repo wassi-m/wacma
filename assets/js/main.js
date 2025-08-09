@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (brandEl) {
     brandEl.style.cursor = "pointer";
     brandEl.addEventListener("click", () => {
-      window.location.href = "index.html"; // adjust if hosted at root/subpath
+      window.location.href = "index.html"; // adjust if hosted at a subpath
     });
   }
 
@@ -291,76 +291,48 @@ window.addEventListener("load", () => {
 });
 
 /* =========================================================
-   Locomotive + ScrollTrigger integration
+   Locomotive + ScrollTrigger + Parallax (YOUR EXACT SNIPPET)
    ========================================================= */
 window.addEventListener("load", () => {
-  const scrollerSelector = "[data-scroll-container]";
-  const scrollerEl = $(scrollerSelector);
-  const hasGSAP = (typeof gsap !== "undefined") && (typeof ScrollTrigger !== "undefined");
-  const hasLoco = (typeof LocomotiveScroll !== "undefined") && scrollerEl;
-
-  if (hasGSAP && hasLoco) {
-    const locoScroll = new LocomotiveScroll({
-      el: scrollerEl,
-      smooth: true
-      // multiplier: 1.2,
-    });
-
-    locoScroll.on("scroll", ScrollTrigger.update);
-
-    // Use selector string (avoids indexOf crash)
-    ScrollTrigger.scrollerProxy(scrollerSelector, {
-      scrollTop(value) {
-        return arguments.length
-          ? locoScroll.scrollTo(value, { duration: 0, disableLerp: true })
-          : (locoScroll.scroll?.instance?.scroll?.y || 0);
-      },
-      getBoundingClientRect() {
-        return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
-      },
-      pinType: scrollerEl.style.transform ? "transform" : "fixed"
-    });
-
-    ScrollTrigger.addEventListener("refresh", () => locoScroll.update());
-    ScrollTrigger.refresh();
-
-    // Header state using Locomotive position
-    const header = $("#main-header");
-    if (header) {
-      locoScroll.on("scroll", (args) => {
-        const y = (args && args.scroll && typeof args.scroll.y === "number") ? args.scroll.y : 0;
-        if (y > 50) header.classList.add("scrolled");
-        else header.classList.remove("scrolled");
-      });
-    }
-  }
-
-  /* -----------------------------------------------------
-     PARALLAX HERO BG — run AFTER Loco/ST init (key fix)
-     ----------------------------------------------------- */
-  const hero = document.querySelector(".hero");
-  const heroBg = document.querySelector(".hero-bg");
-  if (!hero || !heroBg || typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") return;
-
+  // >>> YOUR SNIPPET STARTS HERE (unchanged) <<<
+  const locoScroll = new LocomotiveScroll({
+    el: document.querySelector('[data-scroll-container]'),
+    smooth: true,
+    // optional: multiplier: 1.2, class: 'is-reveal'
+  });
   gsap.registerPlugin(ScrollTrigger);
 
-  const hasLocoReady = (typeof LocomotiveScroll !== "undefined") && scrollerEl;
+  locoScroll.on("scroll", ScrollTrigger.update);
 
-  // Kill any previous (in case of double init)
-  ScrollTrigger.getAll().forEach(t => { if (t.vars && t.vars.id === "heroParallax") t.kill(); });
-
-  gsap.to(heroBg, {
-    yPercent: 20,
-    ease: "none",
-    scrollTrigger: {
-      id: "heroParallax",
-      scroller: hasLocoReady ? scrollerSelector : undefined, // Loco container if present, else window
-      trigger: hero,
-      start: "top top",
-      end: "bottom top",
-      scrub: true
-    }
+  ScrollTrigger.scrollerProxy("[data-scroll-container]", {
+    scrollTop(value) {
+      return arguments.length
+        ? locoScroll.scrollTo(value, { duration: 0, disableLerp: true })
+        : locoScroll.scroll.instance.scroll.y;
+    },
+    getBoundingClientRect() {
+      return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
+    },
+    pinType: document.querySelector("[data-scroll-container]").style.transform ? "transform" : "fixed"
   });
 
+  ScrollTrigger.addEventListener("refresh", () => locoScroll.update());
   ScrollTrigger.refresh();
+
+  const waveElement = document.querySelector('.wave1');
+  if (waveElement) {
+
+    gsap.to(".hero-bg", {
+      yPercent: 20,
+      ease: "none",
+      scrollTrigger: {
+        scroller: "[data-scroll-container]",
+        trigger: ".hero",
+        start: "top top",
+        end: "bottom top",
+        scrub: true
+      }
+    });
+  }
+  // >>> YOUR SNIPPET ENDS HERE <<<
 });
