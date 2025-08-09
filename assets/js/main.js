@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (brandEl) {
     brandEl.style.cursor = "pointer";
     brandEl.addEventListener("click", () => {
-      window.location.href = "index.html"; // adjust if hosted at a subpath
+      window.location.href = "/"; // adjust if hosted at a subpath
     });
   }
 
