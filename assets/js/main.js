@@ -198,3 +198,19 @@ window.addEventListener("scroll", () => {
   }
 });
 
+
+const previewCount = 6; // Show only first 6 videos
+const previewGrid = document.getElementById("previewGrid");
+
+videos.slice(0, previewCount).forEach(video => {
+  const card = document.createElement("div");
+  card.className = "video-card";
+  card.innerHTML = `
+    <iframe src="https://www.youtube.com/embed/${video.youtubeId}" 
+            frameborder="0" allowfullscreen></iframe>
+    <div class="video-info">
+      <h4>${video.title}</h4>
+    </div>
+  `;
+  previewGrid.appendChild(card);
+});
