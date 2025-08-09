@@ -698,6 +698,134 @@ font-family: "Anton", sans-serif;
   .video-card:hover { transform: none; }
 }
 
+/* === Thumbnail cards with overlay play button === */
+.video-thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #000;
+  cursor: pointer;
+}
+
+.video-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: saturate(1.02);
+  transition: transform .25s ease, opacity .25s ease;
+}
+
+.video-thumb::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(transparent, rgba(0,0,0,.25) 70%);
+  opacity: .7;
+  transition: opacity .25s ease;
+}
+
+.video-thumb:hover img {
+  transform: scale(1.02);
+}
+
+.video-thumb:hover::after {
+  opacity: .9;
+}
+
+/* Play button */
+.video-play {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none; /* clicks go to .video-thumb */
+}
+
+.video-play .play-circle {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: rgba(0,0,0,.45);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 6px 20px rgba(0,0,0,.35);
+  transition: transform .2s ease, background .2s ease;
+  border: 1px solid rgba(255,255,255,.25);
+}
+.video-thumb:hover .play-circle {
+  transform: scale(1.04);
+  background: rgba(0,0,0,.55);
+}
+
+/* tiny triangle */
+.video-play .play-triangle {
+  width: 0;
+  height: 0;
+  border-left: 14px solid #F7FD00;  /* brand yellow */
+  border-top: 9px solid transparent;
+  border-bottom: 9px solid transparent;
+  margin-left: 3px;
+}
+
+/* === Modal / Lightbox === */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.72);
+  display: none;            /* toggled by .is-open */
+  align-items: center;
+  justify-content: center;
+  z-index: 9998;            /* above your preloader after it hides */
+  padding: 24px;
+}
+
+.lightbox.is-open { display: flex; }
+
+.lightbox-inner {
+  position: relative;
+  width: 80vw;
+  height: 80vh;
+  max-width: 1400px;
+  max-height: 90vh;
+  background: #0F101E;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(0,0,0,.5);
+}
+
+/* responsive player inside modal */
+.lightbox-player {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Close (X) button */
+.lightbox-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: rgba(0,0,0,.5);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 2;
+  transition: background .2s ease, transform .2s ease;
+}
+.lightbox-close:hover { background: rgba(0,0,0,.65); transform: translateY(-1px); }
+
+/* lock body scroll when modal open */
+body.modal-open { overflow: hidden; }
+
 
 /* Responsive tweaks */
 @media (max-width: 768px) {

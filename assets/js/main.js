@@ -46,7 +46,7 @@ gsap.to(".hero-bg", {
 
   const MIN_PRELOAD_TIME = 2000;
   const startTime = Date.now();
-  
+
 if (waveElement) {
   const audio = document.getElementById("jingle");
   const tagline = document.getElementById("tagline");
@@ -254,75 +254,143 @@ const videos = [
 ];
 
 // --- Helper: robust YouTube ID parser (handles youtu.be, watch?v=, embed, etc.) ---
+// Get YT ID (same helper you already have)
 function getYouTubeID(url) {
   try {
     const u = new URL(url);
-    // watch?v=ID
     const v = u.searchParams.get("v");
     if (v && v.length === 11) return v;
-
-    // youtu.be/ID or /embed/ID or /shorts/ID
-    const parts = u.pathname.split("/");
-    for (let i = parts.length - 1; i >= 0; i--) {
-      const seg = parts[i];
-      if (seg && seg.length === 11 && /^[a-zA-Z0-9_-]{11}$/.test(seg)) {
-        return seg;
-      }
+    const segs = u.pathname.split("/").filter(Boolean);
+    for (let i = segs.length - 1; i >= 0; i--) {
+      const s = segs[i];
+      if (/^[\w-]{11}$/.test(s)) return s;
     }
-  } catch (e) {
-    // fall through to regex if URL() fails
-  }
-  const regExp = /(?:youtu\.be\/|v\/|u\/\w\/|embed\/|shorts\/|watch\?v=|&v=)([^#&?]{11})/;
-  const match = url.match(regExp);
-  return match ? match[1] : null;
+  } catch {}
+  const m = url.match(/(?:youtu\.be\/|v\/|embed\/|shorts\/|watch\?v=|&v=)([^#&?]{11})/);
+  return m ? m[1] : null;
 }
 
-// --- UI Builder ---
-function createVideoCard({ id, title, artist }) {
+// Build a thumbnail card (no iframe in grid)
+function createVideoCardThumb({ id, title, artist, url }) {
   const card = document.createElement("div");
   card.className = "video-card";
+
+  // YouTube thumbnail: hqdefault.jpg (or maxresdefault if available; hq is safest)
+  const thumb = `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+
   card.innerHTML = `
-    <div class="video-wrapper">
-      <iframe
-        src="https://www.youtube.com/embed/${id}?rel=0"
-        title="${title} — ${artist}"
-        frameborder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowfullscreen
-        loading="lazy"
-      ></iframe>
+    <div class="video-thumb" data-video="${id}" aria-label="Play ${title} — ${artist}" role="button" tabindex="0">
+      <img src="${thumb}" alt="${title} — ${artist}">
+      <div class="video-play">
+        <div class="play-circle">
+          <div class="play-triangle"></div>
+        </div>
+      </div>
     </div>
     <div class="video-info">
       <h4 class="video-title">${title}</h4>
       <p class="video-artist">${artist}</p>
     </div>
   `;
+
+  // Click / keyboard to open lightbox
+  const trigger = card.querySelector(".video-thumb");
+  const open = () => openLightbox(id, title, artist);
+  trigger.addEventListener("click", open);
+  trigger.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      open();
+    }
+  });
+
   return card;
 }
 
-// --- Renderers ---
+// Renderers (use the thumbnail card now)
 function renderAllToGallery() {
   const gallery = document.getElementById("video-gallery");
   if (!gallery) return;
   videos.forEach(v => {
     const id = getYouTubeID(v.url);
     if (!id) return;
-    gallery.appendChild(createVideoCard({ id, title: v.title, artist: v.artist }));
+    gallery.appendChild(createVideoCardThumb({ id, title: v.title, artist: v.artist, url: v.url }));
   });
 }
 
 function renderLastSixToPreview() {
   const previewGrid = document.getElementById("previewGrid");
   if (!previewGrid) return;
-  const lastSix = videos.slice(-6); // last 6 items
-  lastSix.forEach(v => {
+  videos.slice(-6).forEach(v => {
     const id = getYouTubeID(v.url);
     if (!id) return;
-    previewGrid.appendChild(createVideoCard({ id, title: v.title, artist: v.artist }));
+    previewGrid.appendChild(createVideoCardThumb({ id, title: v.title, artist: v.artist, url: v.url }));
   });
 }
 
-// --- Page-aware bootstrapping ---
-// If you're loading this on every page, both calls are safe (they no-op if the element isn't present).
-renderAllToGallery();     // portfolio page: renders ALL when #video-gallery exists
-renderLastSixToPreview(); // index page: renders LAST 6 when #previewGrid exists
+/* ---------- Modal / Lightbox ---------- */
+let lightboxEl;
+
+function ensureLightbox() {
+  if (lightboxEl) return lightboxEl;
+  lightboxEl = document.createElement("div");
+  lightboxEl.className = "lightbox";
+  lightboxEl.innerHTML = `
+    <div class="lightbox-inner" role="dialog" aria-modal="true" aria-label="Video player">
+      <button class="lightbox-close" aria-label="Close">✕</button>
+      <!-- iframe inserted dynamically -->
+    </div>
+  `;
+  document.body.appendChild(lightboxEl);
+
+  // Close interactions
+  lightboxEl.addEventListener("click", (e) => {
+    // Close when clicking outside the inner panel
+    if (e.target === lightboxEl) closeLightbox();
+  });
+  lightboxEl.querySelector(".lightbox-close").addEventListener("click", closeLightbox);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && lightboxEl.classList.contains("is-open")) closeLightbox();
+  });
+
+  return lightboxEl;
+}
+
+function openLightbox(id, title, artist) {
+  const lb = ensureLightbox();
+  const inner = lb.querySelector(".lightbox-inner");
+
+  // Clean previous player
+  const old = inner.querySelector("iframe");
+  if (old) old.remove();
+
+  // Build player (nocookie + modest params)
+  const src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
+  const iframe = document.createElement("iframe");
+  iframe.className = "lightbox-player";
+  iframe.src = src;
+  iframe.allow =
+    "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+  iframe.allowFullscreen = true;
+  iframe.title = `${title} — ${artist}`;
+  inner.appendChild(iframe);
+
+  // Show
+  lb.classList.add("is-open");
+  document.body.classList.add("modal-open");
+}
+
+function closeLightbox() {
+  if (!lightboxEl) return;
+  lightboxEl.classList.remove("is-open");
+  document.body.classList.remove("modal-open");
+  // Stop video by removing iframe
+  const iframe = lightboxEl.querySelector("iframe");
+  if (iframe) iframe.remove();
+}
+
+// Make sure DOM exists
+document.addEventListener("DOMContentLoaded", () => {
+  renderAllToGallery();
+  renderLastSixToPreview();
+});
