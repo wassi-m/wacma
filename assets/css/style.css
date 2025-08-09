@@ -371,6 +371,208 @@ font-family: "Anton", sans-serif;
     padding: 80px 40px;
     background-color: #0F101E;
   }
+
+  /* CSS */
+.section {
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 0 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #222;
+}
+
+.section-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 30px;
+  text-align: center;
+  color: #1a1a1a;
+}
+
+.showreel-video-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.showreel-video {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+.testimonials-list {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.testimonial {
+  font-style: italic;
+  background: #f9f9f9;
+  padding: 20px 25px;
+  border-radius: 10px;
+  border-left: 6px solid #4a90e2;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.testimonial cite {
+  display: block;
+  margin-top: 12px;
+  font-style: normal;
+  font-weight: 700;
+  color: #4a90e2;
+  text-align: right;
+}
+
+.pricing-cards {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.pricing-card {
+  background: #fff;
+  border: 2px solid #ddd;
+  border-radius: 15px;
+  padding: 30px 25px;
+  width: 260px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  transition: border-color 0.3s ease;
+}
+
+.pricing-card.featured {
+  border-color: #4a90e2;
+  box-shadow: 0 10px 25px rgba(74, 144, 226, 0.3);
+}
+
+.pricing-card h3 {
+  margin-top: 0;
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: #222;
+}
+
+.price {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #4a90e2;
+}
+
+.pricing-card ul {
+  list-style-type: disc;
+  padding-left: 20px;
+  color: #444;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.bundle-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.bundle-card {
+  border-radius: 12px;
+  border: 2px solid #ccc;
+  padding: 25px 20px;
+  width: 280px;
+  background: #fefefe;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+  text-align: center;
+}
+
+.bundle-card h3 {
+  margin-top: 0;
+  font-size: 1.3rem;
+  color: #222;
+}
+
+.bundle-price {
+  font-weight: 700;
+  margin-top: 15px;
+  font-size: 1.2rem;
+  color: #4a90e2;
+}
+
+.services-list {
+  list-style-type: none;
+  padding-left: 0;
+  max-width: 400px;
+  margin: 0 auto;
+  font-size: 1rem;
+  color: #333;
+}
+
+.services-list li {
+  background: url('checkmark.svg') no-repeat left center;
+  background-size: 18px 18px;
+  padding-left: 30px;
+  margin-bottom: 15px;
+}
+
+.contact-form {
+  max-width: 500px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.contact-form label {
+  font-weight: 600;
+  color: #444;
+}
+
+.contact-form input,
+.contact-form select,
+.contact-form textarea {
+  font-size: 1rem;
+  padding: 12px 14px;
+  border: 1.8px solid #ccc;
+  border-radius: 8px;
+  resize: vertical;
+  transition: border-color 0.3s ease;
+}
+
+.contact-form input:focus,
+.contact-form select:focus,
+.contact-form textarea:focus {
+  outline: none;
+  border-color: #4a90e2;
+}
+
+.btn-primary {
+  background-color: #4a90e2;
+  border: none;
+  padding: 15px 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+.btn-primary:hover {
+  background-color: #357ABD;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .pricing-cards,
+  .bundle-list {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
   
   /* Responsive tweaks */
   @media (max-width: 768px) {
