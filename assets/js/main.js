@@ -250,7 +250,7 @@ if (document.getElementById("video-gallery")) {
 const previewCount = 6; // Show only first 6 videos
 const previewGrid = document.getElementById("previewGrid");
 
-videos.slice(0, previewCount).forEach(link => {
+youtubeLinks.slice(0, previewCount).forEach(link => {
   const videoID = getYouTubeID(link);
   const card = document.createElement("div");
   card.className = "video-card";
