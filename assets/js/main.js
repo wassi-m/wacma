@@ -198,68 +198,126 @@ window.addEventListener("scroll", () => {
   }
 });
 
-const youtubeLinks = [
-    "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    "https://www.youtube.com/watch?v=3JZ_D3ELwOQ",
-    "https://www.youtube.com/watch?v=l9nh1l8ZIJQ",
-    "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    "https://www.youtube.com/watch?v=3JZ_D3ELwOQ",
-    "https://www.youtube.com/watch?v=l9nh1l8ZIJQ",    
-    "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    "https://www.youtube.com/watch?v=3JZ_D3ELwOQ",
-    "https://www.youtube.com/watch?v=l9nh1l8ZIJQ"
-    // Add your YouTube links here
-  ];
-
-  function getYouTubeID(url) {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[2].length === 11) ? match[2] : null;
+// --- Data: include title + artist for each video ---
+const videos = [
+  {
+    url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    title: "Never Gonna Give You Up",
+    artist: "Rick Astley"
+  },
+  {
+    url: "https://www.youtube.com/watch?v=3JZ_D3ELwOQ",
+    title: "See You Again",
+    artist: "Wiz Khalifa ft. Charlie Puth"
+  },
+  {
+    url: "https://www.youtube.com/watch?v=l9nh1l8ZIJQ",
+    title: "Sunflower",
+    artist: "Post Malone, Swae Lee"
+  },
+  // repeat / add your items here...
+  {
+    url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    title: "Never Gonna Give You Up",
+    artist: "Rick Astley"
+  },
+  {
+    url: "https://www.youtube.com/watch?v=3JZ_D3ELwOQ",
+    title: "See You Again",
+    artist: "Wiz Khalifa ft. Charlie Puth"
+  },
+  {
+    url: "https://www.youtube.com/watch?v=l9nh1l8ZIJQ",
+    title: "Sunflower",
+    artist: "Post Malone, Swae Lee"
+  },
+  {
+    url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    title: "Never Gonna Give You Up",
+    artist: "Rick Astley"
+  },
+  {
+    url: "https://www.youtube.com/watch?v=3JZ_D3ELwOQ",
+    title: "See You Again",
+    artist: "Wiz Khalifa ft. Charlie Puth"
+  },
+  {
+    url: "https://www.youtube.com/watch?v=l9nh1l8ZIJQ",
+    title: "Sunflower",
+    artist: "Post Malone, Swae Lee"
   }
+];
 
+// --- Helper: robust YouTube ID parser (handles youtu.be, watch?v=, embed, etc.) ---
+function getYouTubeID(url) {
+  try {
+    const u = new URL(url);
+    // watch?v=ID
+    const v = u.searchParams.get("v");
+    if (v && v.length === 11) return v;
 
-// This runs on all pages (index.html, portfolio.html, etc.)
-// So wrap inside a check to run only on portfolio page
-if (document.getElementById("video-gallery")) {
-  
-  const gallery = document.getElementById("video-gallery");
-
-  youtubeLinks.forEach(link => {
-    const videoID = getYouTubeID(link);
-    if (videoID) {
-      const iframe = document.createElement("iframe");
-      iframe.width = "360";
-      iframe.height = "215";
-      iframe.src = `https://www.youtube.com/embed/${videoID}`;
-      iframe.title = "YouTube video player";
-      iframe.frameBorder = "0";
-      iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-      iframe.allowFullscreen = true;
-      iframe.loading = "lazy";
-
-      const videoWrapper = document.createElement("div");
-      videoWrapper.className = "video-wrapper";
-      videoWrapper.appendChild(iframe);
-
-      gallery.appendChild(videoWrapper);
+    // youtu.be/ID or /embed/ID or /shorts/ID
+    const parts = u.pathname.split("/");
+    for (let i = parts.length - 1; i >= 0; i--) {
+      const seg = parts[i];
+      if (seg && seg.length === 11 && /^[a-zA-Z0-9_-]{11}$/.test(seg)) {
+        return seg;
+      }
     }
-  });
+  } catch (e) {
+    // fall through to regex if URL() fails
+  }
+  const regExp = /(?:youtu\.be\/|v\/|u\/\w\/|embed\/|shorts\/|watch\?v=|&v=)([^#&?]{11})/;
+  const match = url.match(regExp);
+  return match ? match[1] : null;
 }
 
-
-const previewCount = 6; // Show only first 6 videos
-const previewGrid = document.getElementById("previewGrid");
-
-youtubeLinks.slice(0, previewCount).forEach(link => {
-  const videoID = getYouTubeID(link);
+// --- UI Builder ---
+function createVideoCard({ id, title, artist }) {
   const card = document.createElement("div");
   card.className = "video-card";
   card.innerHTML = `
-    <iframe src="https://www.youtube.com/embed/${videoID}" 
-            frameborder="0" allowfullscreen></iframe>
+    <div class="video-wrapper">
+      <iframe
+        src="https://www.youtube.com/embed/${id}?rel=0"
+        title="${title} — ${artist}"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen
+        loading="lazy"
+      ></iframe>
+    </div>
     <div class="video-info">
-      <h4>${video.title}</h4>
+      <h4 class="video-title">${title}</h4>
+      <p class="video-artist">${artist}</p>
     </div>
   `;
-  previewGrid.appendChild(card);
-});
+  return card;
+}
+
+// --- Renderers ---
+function renderAllToGallery() {
+  const gallery = document.getElementById("video-gallery");
+  if (!gallery) return;
+  videos.forEach(v => {
+    const id = getYouTubeID(v.url);
+    if (!id) return;
+    gallery.appendChild(createVideoCard({ id, title: v.title, artist: v.artist }));
+  });
+}
+
+function renderLastSixToPreview() {
+  const previewGrid = document.getElementById("previewGrid");
+  if (!previewGrid) return;
+  const lastSix = videos.slice(-6); // last 6 items
+  lastSix.forEach(v => {
+    const id = getYouTubeID(v.url);
+    if (!id) return;
+    previewGrid.appendChild(createVideoCard({ id, title: v.title, artist: v.artist }));
+  });
+}
+
+// --- Page-aware bootstrapping ---
+// If you're loading this on every page, both calls are safe (they no-op if the element isn't present).
+renderAllToGallery();     // portfolio page: renders ALL when #video-gallery exists
+renderLastSixToPreview(); // index page: renders LAST 6 when #previewGrid exists
