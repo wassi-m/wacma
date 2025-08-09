@@ -1,232 +1,38 @@
 /* =========================================================
    WACMA — main.js (safe + cross-page)
-   - Brand click → go home
-   - Header "scrolled" state (native or Locomotive)
-   - Preloader timing
-   - Hero audio + wave animation (guarded)
-   - GSAP + Locomotive integration (guarded; selector strings)
-   - YouTube thumbnail grids + lightbox
    ========================================================= */
 
 /* ---------- Helpers ---------- */
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-/* ---------- Brand → Home ---------- */
+/* =========================================================
+   Brand → Home & Header (native fallback)
+   ========================================================= */
 document.addEventListener("DOMContentLoaded", () => {
+  // Brand → go home
   const brandEl = $(".brand");
   if (brandEl) {
     brandEl.style.cursor = "pointer";
     brandEl.addEventListener("click", () => {
-      // change if you deploy at a subpath
       window.location.href = "/";
     });
   }
-});
 
-/* ---------- Header "scrolled" (native fallback) ---------- */
-document.addEventListener("DOMContentLoaded", () => {
+  // Header scrolled (native scroll fallback)
   const header = $("#main-header");
-  if (!header) return;
-
-  const onWinScroll = () => {
-    if (window.scrollY > 50) header.classList.add("scrolled");
-    else header.classList.remove("scrolled");
-  };
-  window.addEventListener("scroll", onWinScroll, { passive: true });
-});
-
-/* ---------- PRELOADER + HERO AUDIO/WAVES (guarded) ---------- */
-window.addEventListener("load", () => {
-  const MIN_PRELOAD_TIME = 2000;
-  const startTime = Date.now();
-
-  const hasWaves = !!$(".wave1");
-  const audio = $("#jingle");
-  const tagline = $("#tagline");
-  const unmuteBtn = $("#unmute-btn");
-
-  if (hasWaves && audio && tagline && unmuteBtn) {
-    audio.muted = true;
-    unmuteBtn.dataset.state = "unmute";
-
-    // Split tagline to word spans once
-    if (!tagline.dataset.split) {
-      const words = (tagline.textContent || "").trim().split(/\s+/);
-      tagline.textContent = "";
-      words.forEach((word, idx) => {
-        const span = document.createElement("span");
-        span.textContent = word;
-        span.className = "word";
-        tagline.appendChild(span);
-        if (idx !== words.length - 1) tagline.appendChild(document.createTextNode(" "));
-      });
-      tagline.dataset.split = "1";
-    }
-
-    const resetWave = (wave) => {
-      if (!wave) return;
-      wave.classList.remove("wave-animate", "wave-group-animate", "wave-disappear");
-      wave.style.opacity = "";
-      wave.style.strokeDashoffset = "";
-      wave.style.transition = "none";
-      void wave.offsetWidth; // reflow
-      wave.style.transition = "";
+  if (header) {
+    const onWinScroll = () => {
+      if (window.scrollY > 50) header.classList.add("scrolled");
+      else header.classList.remove("scrolled");
     };
-
-    const startAnimation = () => {
-      const baseDelay = 0.2;
-      const totalDelayForLastWord = 3.8;
-      const beatDuration = 0.5;
-      const spans = $$(".word", tagline);
-
-      spans.forEach((span, index, arr) => {
-        const delay = (index === arr.length - 1)
-          ? baseDelay + totalDelayForLastWord
-          : baseDelay + index * beatDuration;
-
-        span.style.animationDelay = `${delay}s`;
-        span.style.animationDuration = "0.2s";
-
-        // wave1..wave5 on first words
-        if (index < 5) {
-          const wave = $(`.wave${index + 1}`);
-          setTimeout(() => {
-            resetWave(wave);
-            wave?.classList.remove("wave-disappear");
-            wave?.classList.add("wave-animate");
-            // hide after animation
-            setTimeout(() => {
-              wave?.classList.remove("wave-animate");
-              if (wave) {
-                wave.style.strokeDashoffset = "4000";
-                wave.style.opacity = "0";
-              }
-            }, 1000);
-          }, delay * 1000);
-        }
-
-        // on last word show wave1..wave3 staggered
-        if (index === arr.length - 1) {
-          setTimeout(() => {
-            [1, 2, 3].forEach((num, i) => {
-              const wave = $(`.wave${num}`);
-              resetWave(wave);
-              if (wave) {
-                wave.style.strokeDashoffset = "4000";
-                wave.style.opacity = "0";
-                void wave.offsetWidth; // reflow
-                setTimeout(() => {
-                  wave.style.strokeDashoffset = "";
-                  wave.style.opacity = "";
-                  wave.classList.add("wave-group-animate");
-                }, i * 100);
-              }
-            });
-          }, delay * 1000);
-        }
-      });
-
-      tagline.classList.add("animate");
-      setTimeout(() => { unmuteBtn.dataset.state = "repeat"; }, (baseDelay + totalDelayForLastWord + 0.5) * 1000);
-    };
-
-    // Unmute / Repeat
-    unmuteBtn.addEventListener("click", () => {
-      const state = unmuteBtn.dataset.state;
-      if (state === "unmute" || state === "repeat") {
-        unmuteBtn.dataset.state = "playing";
-        audio.muted = false;
-        tagline.classList.remove("animate");
-        $$(".word", tagline).forEach(span => {
-          span.style.transition = "opacity 0.4s ease";
-          span.style.opacity = "0.5";
-        });
-
-        [1, 2, 3, 4, 5].forEach(num => {
-          const wave = $(`.wave${num}`);
-          resetWave(wave);
-          wave?.classList.add("wave-disappear");
-        });
-
-        audio.currentTime = 0;
-        audio.play().then(() => {
-          const waitUntil1s = () => {
-            if (audio.currentTime >= 1) startAnimation();
-            else requestAnimationFrame(waitUntil1s);
-          };
-          waitUntil1s();
-        }).catch(e => console.warn("Audio play failed", e));
-      }
-    });
-  }
-
-  // End preloader after minimum time (no-op if preloader styles absent)
-  const remaining = MIN_PRELOAD_TIME - (Date.now() - startTime);
-  setTimeout(() => { document.body.classList.add("loaded"); }, Math.max(0, remaining));
-});
-
-/* ---------- GSAP + Locomotive (guarded; selector strings) ---------- */
-window.addEventListener("load", () => {
-  const scrollerSelector = "[data-scroll-container]";
-  const scrollerEl = $(scrollerSelector);
-  const hasGSAP = (typeof gsap !== "undefined") && (typeof ScrollTrigger !== "undefined");
-  const hasLoco = (typeof LocomotiveScroll !== "undefined") && scrollerEl;
-
-  if (hasGSAP && hasLoco) {
-    const locoScroll = new LocomotiveScroll({
-      el: scrollerEl,
-      smooth: true,
-      // multiplier: 1.2,
-    });
-
-    locoScroll.on("scroll", ScrollTrigger.update);
-
-    // IMPORTANT: use selector string to avoid indexOf crash in some builds
-    ScrollTrigger.scrollerProxy(scrollerSelector, {
-      scrollTop(value) {
-        return arguments.length
-          ? locoScroll.scrollTo(value, { duration: 0, disableLerp: true })
-          : (locoScroll.scroll?.instance?.scroll?.y || 0);
-      },
-      getBoundingClientRect() {
-        return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
-      },
-      pinType: scrollerEl.style.transform ? "transform" : "fixed"
-    });
-
-    ScrollTrigger.addEventListener("refresh", () => locoScroll.update());
-    ScrollTrigger.refresh();
-
-    // Header "scrolled" using Locomotive position
-    const header = $("#main-header");
-    if (header) {
-      locoScroll.on("scroll", (args) => {
-        const y = (args && args.scroll && typeof args.scroll.y === "number") ? args.scroll.y : 0;
-        if (y > 50) header.classList.add("scrolled");
-        else header.classList.remove("scrolled");
-      });
-    }
-
-    // Parallax hero if present
-    if ($(".wave1") && $(".hero")) {
-      gsap.to(".hero-bg", {
-        yPercent: 20,
-        ease: "none",
-        scrollTrigger: {
-          scroller: scrollerSelector,
-          trigger: ".hero",
-          start: "top top",
-          end: "bottom top",
-          scrub: true
-        }
-      });
-    }
+    window.addEventListener("scroll", onWinScroll, { passive: true });
   }
 });
 
-/* ---------- YouTube Grids (thumbnail + lightbox) ---------- */
-// Data: include title + artist for each video
+/* =========================================================
+   YouTube data + helpers (title + artist)
+   ========================================================= */
 const videos = [
   { url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", title: "Never Gonna Give You Up", artist: "Rick Astley" },
   { url: "https://www.youtube.com/watch?v=3JZ_D3ELwOQ", title: "See You Again", artist: "Wiz Khalifa ft. Charlie Puth" },
@@ -254,6 +60,7 @@ function getYouTubeID(url) {
   return m ? m[1] : null;
 }
 
+/* ---------- Build thumbnail card (no iframe in grid) ---------- */
 function createVideoCardThumb({ id, title, artist }) {
   const card = document.createElement("div");
   card.className = "video-card";
@@ -261,9 +68,7 @@ function createVideoCardThumb({ id, title, artist }) {
   card.innerHTML = `
     <div class="video-thumb" data-video="${id}" aria-label="Play ${title} — ${artist}" role="button" tabindex="0">
       <img src="${thumb}" alt="${title} — ${artist}">
-      <div class="video-play">
-        <div class="play-circle"><div class="play-triangle"></div></div>
-      </div>
+      <div class="video-play"><div class="play-circle"><div class="play-triangle"></div></div></div>
     </div>
     <div class="video-info">
       <h4 class="video-title">${title}</h4>
@@ -297,7 +102,9 @@ function renderLastSixToPreview() {
   });
 }
 
-/* ---------- Lightbox ---------- */
+/* =========================================================
+   Lightbox modal
+   ========================================================= */
 let lightboxEl;
 function ensureLightbox() {
   if (lightboxEl) return lightboxEl;
@@ -348,9 +155,230 @@ function closeLightbox() {
   if (iframe) iframe.remove();
 }
 
-/* ---------- Boot grids once DOM is ready ---------- */
+/* =========================================================
+   Boot grids once DOM is ready
+   ========================================================= */
 document.addEventListener("DOMContentLoaded", () => {
   console.log("WACMA site loaded.");
   renderAllToGallery();     // portfolio page: all videos (no-op if #video-gallery missing)
   renderLastSixToPreview(); // index page: last 6 (no-op if #previewGrid missing)
+});
+
+/* =========================================================
+   Preloader + Audio/Waves (guarded)
+   ========================================================= */
+window.addEventListener("load", () => {
+  const MIN_PRELOAD_TIME = 2000;
+  const startTime = Date.now();
+
+  const hasWaves = !!$(".wave1");
+  const audio = $("#jingle");
+  const tagline = $("#tagline");
+  const unmuteBtn = $("#unmute-btn");
+
+  if (hasWaves && audio && tagline && unmuteBtn) {
+    audio.muted = true;
+    unmuteBtn.dataset.state = "unmute";
+
+    // Split tagline to spans once
+    if (!tagline.dataset.split) {
+      const words = (tagline.textContent || "").trim().split(/\s+/);
+      tagline.textContent = "";
+      words.forEach((word, idx) => {
+        const span = document.createElement("span");
+        span.textContent = word;
+        span.className = "word";
+        tagline.appendChild(span);
+        if (idx !== words.length - 1) tagline.appendChild(document.createTextNode(" "));
+      });
+      tagline.dataset.split = "1";
+    }
+
+    const resetWave = (wave) => {
+      if (!wave) return;
+      wave.classList.remove("wave-animate", "wave-group-animate", "wave-disappear");
+      wave.style.opacity = "";
+      wave.style.strokeDashoffset = "";
+      wave.style.transition = "none";
+      void wave.offsetWidth; // reflow
+      wave.style.transition = "";
+    };
+
+    const startAnimation = () => {
+      const baseDelay = 0.2;
+      const totalDelayForLastWord = 3.8;
+      const beatDuration = 0.5;
+      const spans = $$(".word", tagline);
+
+      spans.forEach((span, index, arr) => {
+        const delay = (index === arr.length - 1)
+          ? baseDelay + totalDelayForLastWord
+          : baseDelay + index * beatDuration;
+
+        span.style.animationDelay = `${delay}s`;
+        span.style.animationDuration = "0.2s";
+
+        if (index < 5) {
+          const wave = $(`.wave${index + 1}`);
+          setTimeout(() => {
+            resetWave(wave);
+            wave?.classList.remove("wave-disappear");
+            wave?.classList.add("wave-animate");
+            setTimeout(() => {
+              wave?.classList.remove("wave-animate");
+              if (wave) {
+                wave.style.strokeDashoffset = "4000";
+                wave.style.opacity = "0";
+              }
+            }, 1000);
+          }, delay * 1000);
+        }
+
+        if (index === arr.length - 1) {
+          setTimeout(() => {
+            [1, 2, 3].forEach((num, i) => {
+              const wave = $(`.wave${num}`);
+              resetWave(wave);
+              if (wave) {
+                wave.style.strokeDashoffset = "4000";
+                wave.style.opacity = "0";
+                void wave.offsetWidth;
+                setTimeout(() => {
+                  wave.style.strokeDashoffset = "";
+                  wave.style.opacity = "";
+                  wave.classList.add("wave-group-animate");
+                }, i * 100);
+              }
+            });
+          }, delay * 1000);
+        }
+      });
+
+      tagline.classList.add("animate");
+      setTimeout(() => { unmuteBtn.dataset.state = "repeat"; }, (baseDelay + totalDelayForLastWord + 0.5) * 1000);
+    };
+
+    // Unmute / Repeat
+    unmuteBtn.addEventListener("click", () => {
+      const state = unmuteBtn.dataset.state;
+      if (state === "unmute" || state === "repeat") {
+        unmuteBtn.dataset.state = "playing";
+        audio.muted = false;
+        tagline.classList.remove("animate");
+        $$(".word", tagline).forEach(span => {
+          span.style.transition = "opacity 0.4s ease";
+          span.style.opacity = "0.5";
+        });
+
+        [1, 2, 3, 4, 5].forEach(num => {
+          const wave = $(`.wave${num}`);
+          resetWave(wave);
+          wave?.classList.add("wave-disappear");
+        });
+
+        audio.currentTime = 0;
+        audio.play().then(() => {
+          const waitUntil1s = () => {
+            if (audio.currentTime >= 1) startAnimation();
+            else requestAnimationFrame(waitUntil1s);
+          };
+          waitUntil1s();
+        }).catch(e => console.warn("Audio play failed", e));
+      }
+    });
+  }
+
+  // End preloader after minimum time
+  const remaining = MIN_PRELOAD_TIME - (Date.now() - startTime);
+  setTimeout(() => { document.body.classList.add("loaded"); }, Math.max(0, remaining));
+});
+
+/* =========================================================
+   GSAP + Locomotive + Parallax
+   ========================================================= */
+function initHeroParallax({ useLoco = false } = {}) {
+  const hero = $(".hero");
+  const bg = $(".hero-bg");
+  if (!hero || !bg) return;
+
+  if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
+    gsap.to(".hero-bg", {
+      yPercent: 20,
+      ease: "none",
+      scrollTrigger: {
+        scroller: useLoco ? "[data-scroll-container]" : undefined,
+        trigger: ".hero",
+        start: "top top",
+        end: "bottom top",
+        scrub: true
+      }
+    });
+  } else {
+    // Vanilla fallback (no GSAP)
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(() => {
+          const rect = hero.getBoundingClientRect();
+          const total = hero.offsetHeight || (window.innerHeight || 1);
+          const traveled = Math.min(Math.max(-rect.top, 0), total);
+          const p = traveled / total; // 0..1
+          bg.style.transform = `translate3d(0, ${p * 20}%, 0)`;
+          ticking = false;
+        });
+      }
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+  }
+}
+
+window.addEventListener("load", () => {
+  const scrollerSelector = "[data-scroll-container]";
+  const scrollerEl = $(scrollerSelector);
+  const hasGSAP = (typeof gsap !== "undefined") && (typeof ScrollTrigger !== "undefined");
+  const hasLoco = (typeof LocomotiveScroll !== "undefined") && scrollerEl;
+
+  if (hasGSAP && hasLoco) {
+    const locoScroll = new LocomotiveScroll({
+      el: scrollerEl,
+      smooth: true,
+      // multiplier: 1.2,
+    });
+
+    locoScroll.on("scroll", ScrollTrigger.update);
+
+    // Use selector string to avoid indexOf crash in some builds
+    ScrollTrigger.scrollerProxy(scrollerSelector, {
+      scrollTop(value) {
+        return arguments.length
+          ? locoScroll.scrollTo(value, { duration: 0, disableLerp: true })
+          : (locoScroll.scroll?.instance?.scroll?.y || 0);
+      },
+      getBoundingClientRect() {
+        return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
+      },
+      pinType: scrollerEl.style.transform ? "transform" : "fixed"
+    });
+
+    ScrollTrigger.addEventListener("refresh", () => locoScroll.update());
+    ScrollTrigger.refresh();
+
+    // Header class with Locomotive position
+    const header = $("#main-header");
+    if (header) {
+      locoScroll.on("scroll", (args) => {
+        const y = (args && args.scroll && typeof args.scroll.y === "number") ? args.scroll.y : 0;
+        if (y > 50) header.classList.add("scrolled");
+        else header.classList.remove("scrolled");
+      });
+    }
+
+    // Parallax with Locomotive
+    initHeroParallax({ useLoco: true });
+  } else {
+    // Native/vanilla
+    initHeroParallax({ useLoco: false });
+  }
 });
