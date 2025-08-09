@@ -198,6 +198,52 @@ window.addEventListener("scroll", () => {
   }
 });
 
+// This runs on all pages (index.html, portfolio.html, etc.)
+// So wrap inside a check to run only on portfolio page
+if (document.getElementById("video-gallery")) {
+  const youtubeLinks = [
+    "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "https://www.youtube.com/watch?v=3JZ_D3ELwOQ",
+    "https://www.youtube.com/watch?v=l9nh1l8ZIJQ",
+    "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "https://www.youtube.com/watch?v=3JZ_D3ELwOQ",
+    "https://www.youtube.com/watch?v=l9nh1l8ZIJQ",    
+    "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "https://www.youtube.com/watch?v=3JZ_D3ELwOQ",
+    "https://www.youtube.com/watch?v=l9nh1l8ZIJQ"
+    // Add your YouTube links here
+  ];
+
+  function getYouTubeID(url) {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  }
+
+  const gallery = document.getElementById("video-gallery");
+
+  youtubeLinks.forEach(link => {
+    const videoID = getYouTubeID(link);
+    if (videoID) {
+      const iframe = document.createElement("iframe");
+      iframe.width = "360";
+      iframe.height = "215";
+      iframe.src = `https://www.youtube.com/embed/${videoID}`;
+      iframe.title = "YouTube video player";
+      iframe.frameBorder = "0";
+      iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      iframe.allowFullscreen = true;
+      iframe.loading = "lazy";
+
+      const videoWrapper = document.createElement("div");
+      videoWrapper.className = "video-wrapper";
+      videoWrapper.appendChild(iframe);
+
+      gallery.appendChild(videoWrapper);
+    }
+  });
+}
+
 
 const previewCount = 6; // Show only first 6 videos
 const previewGrid = document.getElementById("previewGrid");
