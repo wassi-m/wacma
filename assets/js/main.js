@@ -96,7 +96,7 @@ function renderAllToGallery() {
 function renderLastSixToPreview() {
   const container = $("#previewGrid");
   if (!container) return;
-  videos.slice(-6).forEach(v => {
+  videos.slice(-3).forEach(v => {
     const id = getYouTubeID(v.url);
     if (id) container.appendChild(createVideoCardThumb({ id, title: v.title, artist: v.artist }));
   });

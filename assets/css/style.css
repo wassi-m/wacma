@@ -398,7 +398,7 @@ font-family: "Anton", sans-serif;
 }
 
 .showreel-video {
-  max-width: 100%;
+  width: 100%;
   height: auto;
   border-radius: 10px;
   box-shadow: 0 6px 15px rgba(0,0,0,0.1);
@@ -521,12 +521,12 @@ font-family: "Anton", sans-serif;
 
 
 .services-list {
-  list-style-type: none;
-  padding-left: 0;
-  max-width: 400px;
-  margin: 0 auto;
-  font-size: 1rem;
-  color: #333;
+    list-style-type: none;
+    padding-left: 0;
+    /* max-width: 400px; */
+    margin: 0 auto;
+    font-size: 1.5rem;
+    color: #ffffff;
 }
 
 .services-list li {
@@ -585,11 +585,11 @@ font-family: "Anton", sans-serif;
 
 #video-gallery.grid,
 #previewGrid.grid {
-  width: min(1200px, 92vw);
+  width: 100%;
   margin: 40px auto;
   display: grid;
   gap: 24px;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(326px, 1fr));
   align-items: start;
 }
 
@@ -599,7 +599,6 @@ font-family: "Anton", sans-serif;
   #previewGrid.grid {
     grid-template-columns: 1fr;
     gap: 16px;
-    width: 94vw;
   }
 }
 
