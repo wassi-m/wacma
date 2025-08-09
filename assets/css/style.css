@@ -374,7 +374,7 @@ font-family: "Anton", sans-serif;
 
   /* CSS */
 .section {
-  margin: 60px 5%;
+  margin: 115px 5%;
   padding: 0 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #222;
@@ -589,7 +589,7 @@ font-family: "Anton", sans-serif;
   margin: 40px auto;
   display: grid;
   gap: 24px;
-  grid-template-columns: repeat(auto-fill, minmax(326px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   align-items: start;
 }
 
@@ -868,3 +868,88 @@ body.modal-open { overflow: hidden; }
     }
   }
   
+
+  /* ===== Portfolio Filters (scoped) ===== */
+.filters{
+  position: sticky;
+  top: 64px; /* sit under your fixed header */
+  z-index: 5;
+  backdrop-filter: saturate(120%) blur(8px);
+  background: rgba(20,21,39,.6);
+  border-bottom: 1px solid rgba(255,255,255,.05);
+}
+.filters-inner{
+  width: min(1200px, 92vw);
+  margin: 0 auto;
+  padding: 16px 12px;
+  display: grid;
+  gap: 12px;
+}
+.filter-row{
+  display: grid;
+  grid-template-columns: 1.2fr .8fr auto; /* search | type | clear */
+  gap: 12px;
+  align-items: end;
+}
+.filter-group{
+  display: grid;
+  gap: 6px;
+}
+.filter-group label{
+  font-size: 12px;
+  letter-spacing: .4px;
+  color: rgba(255,255,255,.7);
+}
+#filter-search, #filter-type, #filter-year{
+  height: 42px;
+  border-radius: 12px;
+  background: #0F101E;
+  border: 1px solid rgba(255,255,255,.12);
+  color: #fff;
+  padding: 0 12px;
+  outline: none;
+}
+#filter-search::placeholder{ color: rgba(255,255,255,.45); }
+
+.btn--ghost{
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 12px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,.18);
+  color: #fff;
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease;
+}
+.btn--ghost:hover{ background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.3); }
+
+.chip-row{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chip{
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.18);
+  color: rgba(255,255,255,.9);
+  font-size: 13px;
+  cursor: pointer;
+  background: rgba(20,21,39,.65);
+  transition: background .2s ease, border-color .2s ease, color .2s ease;
+  user-select: none;
+}
+.chip[aria-pressed="true"]{
+  background: #F7FD00;
+  color: #0F101E;
+  border-color: #F7FD00;
+}
+
+/* responsive */
+@media (max-width: 900px){
+  .filter-row{ grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 580px){
+  .filter-row{ grid-template-columns: 1fr; }
+}
+

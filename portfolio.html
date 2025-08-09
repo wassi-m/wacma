@@ -47,6 +47,31 @@
 
   <div data-scroll-container>
   <section>
+    <section id="portfolio-filters" class="filters">
+  <div class="filters-inner">
+    <div class="filter-row">
+      <div class="filter-group">
+        <label for="filter-search">Search</label>
+        <input id="filter-search" type="search" placeholder="Search titles, artists, clients, tags…" autocomplete="off" />
+      </div>
+
+      <div class="filter-group">
+        <label for="filter-type">Type</label>
+        <select id="filter-type">
+          <option value="">All types</option>
+          <!-- options injected by JS from your DB -->
+        </select>
+      </div>
+
+      <button id="filter-clear" class="btn btn--ghost" type="button" aria-label="Clear all filters">Clear</button>
+    </div>
+
+    <div class="chip-row" id="filter-chips">
+      <!-- tag chips injected by JS -->
+    </div>
+  </div>
+</section>
+
     <div id="video-gallery" class="grid"></div>
   </section>
 

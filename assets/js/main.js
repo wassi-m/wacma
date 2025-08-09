@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (brandEl) {
     brandEl.style.cursor = "pointer";
     brandEl.addEventListener("click", () => {
-      window.location.href = "/"; // adjust if hosted at a subpath
+      window.location.href = "index.html"; // adjust if hosted at a subpath
     });
   }
 
@@ -33,17 +33,237 @@ document.addEventListener("DOMContentLoaded", () => {
 /* =========================================================
    YouTube data + helpers (title + artist)
    ========================================================= */
+// Example: add meta fields (type, year, client, tags)
 const videos = [
-  { url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", title: "Never Gonna Give You Up", artist: "Rick Astley" },
-  { url: "https://www.youtube.com/watch?v=3JZ_D3ELwOQ", title: "See You Again", artist: "Wiz Khalifa ft. Charlie Puth" },
-  { url: "https://www.youtube.com/watch?v=l9nh1l8ZIJQ", title: "Sunflower", artist: "Post Malone, Swae Lee" },
-  { url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", title: "Never Gonna Give You Up", artist: "Rick Astley" },
-  { url: "https://www.youtube.com/watch?v=3JZ_D3ELwOQ", title: "See You Again", artist: "Wiz Khalifa ft. Charlie Puth" },
-  { url: "https://www.youtube.com/watch?v=l9nh1l8ZIJQ", title: "Sunflower", artist: "Post Malone, Swae Lee" },
-  { url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", title: "Never Gonna Give You Up", artist: "Rick Astley" },
-  { url: "https://www.youtube.com/watch?v=3JZ_D3ELwOQ", title: "See You Again", artist: "Wiz Khalifa ft. Charlie Puth" },
-  { url: "https://www.youtube.com/watch?v=l9nh1l8ZIJQ", title: "Sunflower", artist: "Post Malone, Swae Lee" }
+  {
+    url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    title: "Never Gonna Give You Up",
+    artist: "Rick Astley",
+    type: "Lyric Video",
+    year: 2024,
+    client: "RCA",
+    tags: ["80s", "Pop", "Viral"]
+  },
+  {
+    url: "https://www.youtube.com/watch?v=3JZ_D3ELwOQ",
+    title: "See You Again",
+    artist: "Wiz Khalifa ft. Charlie Puth",
+    type: "Music Video",
+    year: 2015,
+    client: "Atlantic",
+    tags: ["Hip-Hop", "Soundtrack", "Top100"]
+  },
+  {
+    url: "https://www.youtube.com/watch?v=l9nh1l8ZIJQ",
+    title: "Sunflower",
+    artist: "Post Malone, Swae Lee",
+    type: "Visualizer",
+    year: 2018,
+    client: "Republic",
+    tags: ["Pop", "Animated", "Spider-Verse"]
+  },
+    {
+    url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    title: "Never Gonna Give You Up",
+    artist: "Rick Astley",
+    type: "Lyric Video",
+    year: 2024,
+    client: "RCA",
+    tags: ["80s", "Pop", "Viral"]
+  },
+  {
+    url: "https://www.youtube.com/watch?v=3JZ_D3ELwOQ",
+    title: "See You Again",
+    artist: "Wiz Khalifa ft. Charlie Puth",
+    type: "Music Video",
+    year: 2015,
+    client: "Atlantic",
+    tags: ["Hip-Hop", "Soundtrack", "Top100"]
+  },
+  {
+    url: "https://www.youtube.com/watch?v=l9nh1l8ZIJQ",
+    title: "Sunflower",
+    artist: "Post Malone, Swae Lee",
+    type: "Visualizer",
+    year: 2018,
+    client: "Republic",
+    tags: ["Pop", "Animated", "Spider-Verse"]
+  },
+
+    {
+    url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    title: "Never Gonna Give You Up",
+    artist: "Rick Astley",
+    type: "Lyric Video",
+    year: 2024,
+    client: "RCA",
+    tags: ["80s", "Pop", "Viral"]
+  },
+  {
+    url: "https://www.youtube.com/watch?v=3JZ_D3ELwOQ",
+    title: "See You Again",
+    artist: "Wiz Khalifa ft. Charlie Puth",
+    type: "Music Video",
+    year: 2015,
+    client: "Atlantic",
+    tags: ["Hip-Hop", "Soundtrack", "Top100"]
+  },
+  {
+    url: "https://www.youtube.com/watch?v=l9nh1l8ZIJQ",
+    title: "Sunflower",
+    artist: "Post Malone, Swae Lee",
+    type: "Visualizer",
+    year: 2018,
+    client: "Republic",
+    tags: ["Pop", "Animated", "Spider-Verse"]
+  },
+
 ];
+
+// ---------- Build selects & chips from data ----------
+function collectUnique(arr, key){
+  const set = new Set();
+  arr.forEach(v => { if (v[key] != null) set.add(v[key]); });
+  return Array.from(set);
+}
+function collectUniqueTags(arr){
+  const set = new Set();
+  arr.forEach(v => (v.tags || []).forEach(t => set.add(t)));
+  return Array.from(set);
+}
+
+function populateFilters(){
+  const typeEl = document.getElementById("filter-type");
+  const chipWrap = document.getElementById("filter-chips");
+  if (!typeEl || !chipWrap) return;
+
+  // Types (pulled directly from videos[].type)
+  const types = collectUnique(videos, "type").sort();
+  // keep the first "All types" option; clear the rest
+  [...typeEl.querySelectorAll("option:not(:first-child)")].forEach(o => o.remove());
+  types.forEach(t => {
+    const o = document.createElement("option");
+    o.value = t; o.textContent = t;
+    typeEl.appendChild(o);
+  });
+
+  // Tag chips
+  chipWrap.innerHTML = "";
+  const tags = collectUniqueTags(videos).sort();
+  tags.forEach(tag => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "chip";
+    b.textContent = tag;
+    b.setAttribute("aria-pressed", "false");
+    b.dataset.tag = tag;
+    chipWrap.appendChild(b);
+  });
+}
+
+// ---------- Filter + render ----------
+const state = {
+  q: "",
+  type: "",
+  tags: new Set()
+};
+
+function normalize(s){ return (s || "").toString().toLowerCase(); }
+
+function matchesSearch(v, q){
+  if (!q) return true;
+  const hay = [
+    v.title, v.artist, v.client,
+    ...(v.tags || [])
+  ].map(normalize).join(" ");
+  return hay.includes(normalize(q));
+}
+function matchesType(v, type){ return !type || (v.type === type); }
+function matchesTags(v, activeTags){
+  if (!activeTags.size) return true;
+  const t = new Set(v.tags || []);
+  for (const tag of activeTags) if (!t.has(tag)) return false;
+  return true;
+}
+
+function applyFilters(){
+  const gallery = document.getElementById("video-gallery");
+  if (!gallery) return;
+
+  gallery.innerHTML = "";
+
+  const filtered = videos.filter(v =>
+    matchesSearch(v, state.q) &&
+    matchesType(v, state.type) &&
+    matchesTags(v, state.tags)
+  );
+
+  if (filtered.length === 0){
+    const empty = document.createElement("p");
+    empty.style.opacity = ".7";
+    empty.textContent = "No projects match your filters.";
+    gallery.appendChild(empty);
+    return;
+  }
+
+  filtered.forEach(v => {
+    const id = getYouTubeID(v.url);
+    if (!id) return;
+    gallery.appendChild(createVideoCardThumb({
+      id, title: v.title, artist: v.artist
+    }));
+  });
+}
+
+// ---------- Wire up controls ----------
+function initPortfolioFilters(){
+  const searchEl = document.getElementById("filter-search");
+  const typeEl = document.getElementById("filter-type");
+  const clearBtn = document.getElementById("filter-clear");
+  const chipsWrap = document.getElementById("filter-chips");
+  const gallery = document.getElementById("video-gallery");
+  if (!gallery || !searchEl || !typeEl || !clearBtn || !chipsWrap) return;
+
+  populateFilters();
+
+  // debounce search
+  let t;
+  const debounced = (fn, d=200) => (...args) => { clearTimeout(t); t = setTimeout(()=>fn(...args), d); };
+
+  searchEl.addEventListener("input", debounced(() => {
+    state.q = searchEl.value;
+    applyFilters();
+  }, 250));
+
+  typeEl.addEventListener("change", () => {
+    state.type = typeEl.value;
+    applyFilters();
+  });
+
+  chipsWrap.addEventListener("click", (e) => {
+    const chip = e.target.closest(".chip");
+    if (!chip) return;
+    const tag = chip.dataset.tag;
+    const pressed = chip.getAttribute("aria-pressed") === "true";
+    chip.setAttribute("aria-pressed", pressed ? "false" : "true");
+    if (pressed) state.tags.delete(tag);
+    else state.tags.add(tag);
+    applyFilters();
+  });
+
+  clearBtn.addEventListener("click", () => {
+    state.q = ""; state.type = ""; state.tags.clear();
+    searchEl.value = "";
+    typeEl.value = "";
+    chipsWrap.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", "false"));
+    applyFilters();
+  });
+
+  // initial render (filters inactive)
+  applyFilters();
+}
+
+
 
 function getYouTubeID(url) {
   try {
@@ -104,8 +324,17 @@ function renderLastSixToPreview() {
 
 /* ---------- Boot grids ---------- */
 document.addEventListener("DOMContentLoaded", () => {
-  renderAllToGallery();     // portfolio page (no-op if #video-gallery missing)
-  renderLastSixToPreview(); // index page (no-op if #previewGrid missing)
+  const isPortfolio = document.getElementById("video-gallery");
+  const isIndex = document.getElementById("previewGrid");
+
+  if (isPortfolio) {
+    // USE FILTERED RENDER ON PORTFOLIO
+    initPortfolioFilters();
+  }
+  if (isIndex) {
+    // still show last 6 on index
+    renderLastSixToPreview();
+  }
 });
 
 /* =========================================================
