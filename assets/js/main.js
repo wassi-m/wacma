@@ -28,6 +28,9 @@ ScrollTrigger.scrollerProxy("[data-scroll-container]", {
 ScrollTrigger.addEventListener("refresh", () => locoScroll.update());
 ScrollTrigger.refresh();
 
+const waveElement = document.querySelector('.wave1');
+if (waveElement) {
+
 gsap.to(".hero-bg", {
   yPercent: 20,
   ease: "none",
@@ -38,12 +41,13 @@ gsap.to(".hero-bg", {
     end: "bottom top",
     scrub: true
   }
-});
+});}
 
 
   const MIN_PRELOAD_TIME = 2000;
   const startTime = Date.now();
-
+  
+if (waveElement) {
   const audio = document.getElementById("jingle");
   const tagline = document.getElementById("tagline");
   const unmuteBtn = document.getElementById("unmute-btn");
@@ -61,6 +65,7 @@ gsap.to(".hero-bg", {
     tagline.appendChild(span);
     if (index !== words.length - 1) tagline.appendChild(document.createTextNode(" "));
   });
+}
 
   const remainingTime = MIN_PRELOAD_TIME - (Date.now() - startTime);
 
