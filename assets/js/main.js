@@ -198,10 +198,7 @@ window.addEventListener("scroll", () => {
   }
 });
 
-// This runs on all pages (index.html, portfolio.html, etc.)
-// So wrap inside a check to run only on portfolio page
-if (document.getElementById("video-gallery")) {
-  const youtubeLinks = [
+const youtubeLinks = [
     "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     "https://www.youtube.com/watch?v=3JZ_D3ELwOQ",
     "https://www.youtube.com/watch?v=l9nh1l8ZIJQ",
@@ -220,6 +217,11 @@ if (document.getElementById("video-gallery")) {
     return (match && match[2].length === 11) ? match[2] : null;
   }
 
+
+// This runs on all pages (index.html, portfolio.html, etc.)
+// So wrap inside a check to run only on portfolio page
+if (document.getElementById("video-gallery")) {
+  
   const gallery = document.getElementById("video-gallery");
 
   youtubeLinks.forEach(link => {
@@ -248,11 +250,12 @@ if (document.getElementById("video-gallery")) {
 const previewCount = 6; // Show only first 6 videos
 const previewGrid = document.getElementById("previewGrid");
 
-videos.slice(0, previewCount).forEach(video => {
+videos.slice(0, previewCount).forEach(link => {
+  const videoID = getYouTubeID(link);
   const card = document.createElement("div");
   card.className = "video-card";
   card.innerHTML = `
-    <iframe src="https://www.youtube.com/embed/${video.youtubeId}" 
+    <iframe src="https://www.youtube.com/embed/${videoID}" 
             frameborder="0" allowfullscreen></iframe>
     <div class="video-info">
       <h4>${video.title}</h4>
