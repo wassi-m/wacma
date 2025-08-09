@@ -1,5 +1,5 @@
 /* =========================================================
-   WACMA — main.js
+   WACMA — main.js (drop-in)
    ========================================================= */
 
 /* ---------- Tiny helpers ---------- */
@@ -10,17 +10,16 @@ const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
    Brand → Home & Header (native fallback)
    ========================================================= */
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("WACMA site loaded.");
-
+  // Brand click → home
   const brandEl = $(".brand");
   if (brandEl) {
     brandEl.style.cursor = "pointer";
     brandEl.addEventListener("click", () => {
-      window.location.href = "index.html"; // adjust if deployed at a subpath
+      window.location.href = "index.html"; // adjust if hosted at root/subpath
     });
   }
 
-  // Header scrolled (window scroll fallback; Locomotive path added later)
+  // Header scrolled (window scroll fallback)
   const header = $("#main-header");
   if (header) {
     const onWinScroll = () => {
@@ -105,8 +104,8 @@ function renderLastSixToPreview() {
 
 /* ---------- Boot grids ---------- */
 document.addEventListener("DOMContentLoaded", () => {
-  renderAllToGallery();     // portfolio page: all videos (no-op if #video-gallery missing)
-  renderLastSixToPreview(); // index page: last 6 (no-op if #previewGrid missing)
+  renderAllToGallery();     // portfolio page (no-op if #video-gallery missing)
+  renderLastSixToPreview(); // index page (no-op if #previewGrid missing)
 });
 
 /* =========================================================
@@ -292,7 +291,7 @@ window.addEventListener("load", () => {
 });
 
 /* =========================================================
-   Locomotive + ScrollTrigger integration (selector strings)
+   Locomotive + ScrollTrigger integration
    ========================================================= */
 window.addEventListener("load", () => {
   const scrollerSelector = "[data-scroll-container]";
@@ -325,7 +324,7 @@ window.addEventListener("load", () => {
     ScrollTrigger.addEventListener("refresh", () => locoScroll.update());
     ScrollTrigger.refresh();
 
-    // Header class using Locomotive position
+    // Header state using Locomotive position
     const header = $("#main-header");
     if (header) {
       locoScroll.on("scroll", (args) => {
@@ -335,28 +334,33 @@ window.addEventListener("load", () => {
       });
     }
   }
-});
 
-/* =========================================================
-   PARALLAX HERO BG — ORIGINAL (as requested)
-   ========================================================= */
-document.addEventListener("DOMContentLoaded", () => {
+  /* -----------------------------------------------------
+     PARALLAX HERO BG — run AFTER Loco/ST init (key fix)
+     ----------------------------------------------------- */
   const hero = document.querySelector(".hero");
   const heroBg = document.querySelector(".hero-bg");
-  if (!hero || !heroBg) return;
+  if (!hero || !heroBg || typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") return;
 
-  if (typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined") {
-    gsap.registerPlugin(ScrollTrigger);
-    gsap.to(heroBg, {
-      yPercent: 20,
-      ease: "none",
-      scrollTrigger: {
-        scroller: "[data-scroll-container]", // OG: use the Locomotive container
-        trigger: hero,
-        start: "top top",
-        end: "bottom top",
-        scrub: true
-      }
-    });
-  }
+  gsap.registerPlugin(ScrollTrigger);
+
+  const hasLocoReady = (typeof LocomotiveScroll !== "undefined") && scrollerEl;
+
+  // Kill any previous (in case of double init)
+  ScrollTrigger.getAll().forEach(t => { if (t.vars && t.vars.id === "heroParallax") t.kill(); });
+
+  gsap.to(heroBg, {
+    yPercent: 20,
+    ease: "none",
+    scrollTrigger: {
+      id: "heroParallax",
+      scroller: hasLocoReady ? scrollerSelector : undefined, // Loco container if present, else window
+      trigger: hero,
+      start: "top top",
+      end: "bottom top",
+      scrub: true
+    }
+  });
+
+  ScrollTrigger.refresh();
 });
