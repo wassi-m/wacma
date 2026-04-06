@@ -335,8 +335,7 @@ font-family: "Anton", sans-serif;
 
 #main-header.scrolled {
   background: linear-gradient(180deg, rgba(15, 16, 30, 1) 0%, rgba(15, 16, 30, 0.9) 50%, rgba(15, 16, 30, 0) 100%);
-  padding: 10px 30px;
-  height: 20px%;
+  height: 90px;
   padding: 10px 30px;
 }
   
