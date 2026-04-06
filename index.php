@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>W/A Creative Music Agency</title>
+  <title>W/A Creatives</title>
   <link rel="stylesheet" href="assets/css/style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,7 +24,7 @@
   <header id="main-header">
   <nav class="navbar">
     <div class="brand">
-      <span>W/A Creative Music Agency</span>
+      <span>W/A Creatives</span>
     </div>
     <ul class="nav-links">
       <li><a href="#about">About</a></li>
@@ -162,7 +162,7 @@
 
   <!-- Footer -->
   <footer>
-    <p>© <?= date("Y") ?> W/A Creative Music Agency. All rights reserved.</p>
+    <p>© <?= date("Y") ?> W/A Creatives. All rights reserved.</p>
   </footer>
 
   <script src="assets/js/main.js"></script>
