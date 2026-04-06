@@ -531,8 +531,19 @@ window.addEventListener("load", () => {
   });
   gsap.registerPlugin(ScrollTrigger);
 
-  locoScroll.on("scroll", ScrollTrigger.update);
+  locoScroll.on("scroll", (args) => {
+    ScrollTrigger.update();
 
+    const header = document.getElementById("main-header");
+    if (!header) return;
+
+    if (args.scroll.y > 50) {
+      header.classList.add("scrolled");
+    } else {
+      header.classList.remove("scrolled");
+    }
+  });
+  
   ScrollTrigger.scrollerProxy("[data-scroll-container]", {
     scrollTop(value) {
       return arguments.length
